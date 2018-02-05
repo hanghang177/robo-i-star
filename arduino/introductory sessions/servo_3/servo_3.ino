@@ -6,7 +6,7 @@ int userinput;
 
 void setup() {
   // put your setup code here, to run once:
-  Serial.begin(9600); //Begin the UART Serial Communication
+  Serial.begin(115200); //Begin the UART Serial Communication
   servo.attach(9); //Attach pin 9 to the servo
 }
 
