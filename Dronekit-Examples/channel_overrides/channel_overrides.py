@@ -72,7 +72,7 @@ vehicle.channels.overrides = {'3':300}
 print(" Channel overrides: %s" % vehicle.channels.overrides)
 
 print("Set Ch1-Ch8 overrides to 110-810 respectively")
-vehicle.channels.overrides = {'1': 110, '2': 210,'3': 310,'4':4100, '5':510,'6':610,'7':710,'8':810}
+vehicle.channels.overrides = {'1': 110, '2': 210,'3': 310,'4':410, '5':510,'6':610,'7':710,'8':810}
 print(" Channel overrides: %s" % vehicle.channels.overrides) 
 
 
