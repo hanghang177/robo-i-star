@@ -1,13 +1,29 @@
 from dronekit import connect,LocationGlobal,VehicleMode
+import pygame
+
+def getmixerargs():
+    pygame.mixer.init()
+    freq, size, chan = pygame.mixer.get_init()
+    return freq, size, chan
+
+def initMixer():
+	BUFFER = 3072  # audio buffer size, number of samples since pygame 1.8.
+	FREQ, SIZE, CHAN = getmixerargs()
+	pygame.mixer.init(FREQ, SIZE, CHAN, BUFFER)
 
 def PlayAudio(audiofile):#this function is used to play audio
-    import pygame
     pygame.init()
     pygame.mixer.init()
+    clock = pygame.time.Clock()
     pygame.mixer.music.load(audiofile)
     pygame.mixer.music.play()
     while pygame.mixer.music.get_busy():
-        pygame.time.Clock().tick(10)
+        print "Playing..."
+        clock.tick(1000)
+
+initMixer()
+
+PlayAudio('./tests/SampleAudio_0.4mb.mp3')
 
 connection_string = "COM6"
 
