@@ -1,60 +1,79 @@
 from dronekit import connect,LocationGlobal,VehicleMode
 import pygame
 
-def getmixerargs():
-    pygame.mixer.init()
-    freq, size, chan = pygame.mixer.get_init()
-    return freq, size, chan
+"""
+TODO: 
+* file io for initilizer when give waypoint file--will waypoint files have waypoint name as well?
+* find out how to initialize audio file array (probs more file io)
+* create a function that can go to a given waypoint and back to home
+"""
 
-def initMixer():
-	BUFFER = 3072  # audio buffer size, number of samples since pygame 1.8.
-	FREQ, SIZE, CHAN = getmixerargs()
-	pygame.mixer.init(FREQ, SIZE, CHAN, BUFFER)
+class Navigator:
+    def __init__(self, fwaypoints):#if given a file of waypoints this will initialize the waypoints using the file
+        connection_string = "COM6"
+        print('Connecting to vehicle on: %s' % connection_string)
+        self.vehicle = connect(connection_string, baud=57600, wait_ready=False)
 
-def PlayAudio(audiofile):#this function is used to play audio
-    pygame.init()
-    pygame.mixer.init()
-    clock = pygame.time.Clock()
-    pygame.mixer.music.load(audiofile)
-    pygame.mixer.music.play()
-    while pygame.mixer.music.get_busy():
-        print "Playing..."
-        clock.tick(1000)
+        # locations, their audios and their waypoints are stored in parallel arrays
+        self.locations = []
+        self.audio = []
+        self.waypoints = []  # note it's in the format latitude,longitude
+        currentAlt = self.vehicle.location.global_frame.alt
 
-initMixer()
+    def __init__(self):#if no file is given, this will simply initialize the waypoints to what I originally found on google
+        connection_string = "COM6"
+        print('Connecting to vehicle on: %s' % connection_string)
+        self.vehicle = connect(connection_string, baud=57600, wait_ready=False)
 
-PlayAudio('./tests/SampleAudio_0.4mb.mp3')
+        # locations, their audios and their waypoints are stored in parallel arrays
+        self.locations = ["Grainger", "Talbot", "Everitt", "Engineering Hall", "Material Science Building",
+                     "Mechanical Engineering Building"]
+        self.audio = []
+        self.waypoints = []  # note it's in the format latitude,longitude
+        # note these waypoints were taken from google maps locations right infront of the building--they can and should be adjusted if necessary
+        currentAlt= self.vehicle.location.global_frame.alt
+        self.waypoints.append(LocationGlobal(-88.226958, 40.112232, currentAlt))  # Grainger
+        self.waypoints.append(LocationGlobal(-88.227616, 40.111863, currentAlt))  # Talbot
+        self.waypoints.append(LocationGlobal(-88.227629, 40.111151, currentAlt))  # Everitt
+        self.waypoints.append(LocationGlobal(-88.226949, 40.111126, currentAlt))  # Engineering Hall
+        self.waypoints.append(LocationGlobal(-88.226505, 40.111128, currentAlt))  # Material Science Building
+        self.waypoints.append(LocationGlobal(-88.226678, 40.111692, currentAlt))  # Mechanical Engineering Building
 
-connection_string = "COM6"
+    def GoToAll(self):
+        #this function goes through all the waypoints
+        self.vehicle.mode = VehicleMode("Guided")
+        self.vehicle.armed = True
 
-print('Connecting to vehicle on: %s' % connection_string)
-vehicle = connect(connection_string, baud=57600, wait_ready=False)
+        for x in range(len(self.waypoints)):
+            while (self.waypoints[x] != currentloc):  # this loop should take the robot to the location it needs to go
+                lat = (self.vehicle.location.global_frame.lat)
+                lon = (self.vehicle.location.global_frame.lon)
+                currentloc = LocationGlobal(lat, lon, self.vehicle.location.global_frame.alt)
+                LocationGlobal()
+                self.vehicle.simple_goto(self.waypoints[x])
+            # after it gets to the desired location it should play the audio
 
-#locations, their audios and their waypoints are stored in parallel arrays
-locations =  ["Grainger","Talbot","Everitt","Engineering Hall","Material Science Building","Mechanical Engineering Building"]
-audio = []
-waypoints = []#note it's in the format latitude,longitude
-#note these waypoints were taken from google maps locations right infront of the building--they can and should be adjusted if necessary
-waypoints.append(LocationGlobal(-88.226958, 40.112232 , vehicle.location.global_frame.alt))#Grainger
-waypoints.append(LocationGlobal( -88.227616, 40.111863 , vehicle.location.global_frame.alt))#Talbot
-waypoints.append(LocationGlobal(-88.227629, 40.111151, vehicle.location.global_frame.alt))#Everitt
-waypoints.append(LocationGlobal(-88.226949, 40.111126, vehicle.location.global_frame.alt))#Engineering Hall
-waypoints.append(LocationGlobal(-88.226505, 40.111128, vehicle.location.global_frame.alt))#Material Science Building
-waypoints.append(LocationGlobal(-88.226678, 40.111692, vehicle.location.global_frame.alt))#Mechanical Engineering Building
+        self.PlayAudio(self.audio[x])
 
+        self.vehicle.mode = VehicleMode("RTL")  # after the robot has gone through all the waypoints this should bring it back to its original location
 
-for x in range(len(waypoints)):
-    vehicle.mode = VehicleMode("Guided")
-    while (waypoints[x]!=currentloc): #this loop should take the robot to the location it needs to go
-        lat = (vehicle.location.global_frame.lat)
-        lon = (vehicle.location.global_frame.lon)
-        currentloc = LocationGlobal(lat, lon, vehicle.location.global_frame.alt)
-        LocationGlobal()
-        vehicle.simple_goto(waypoints[x])
-    #after it gets to the desired location it should play the audio
-    PlayAudio(audio[x])
+    def PlayAudio(self,audiofile):#this function is used to play audio
+        pygame.mixer.init()
+        BUFFER = 3072  # audio buffer size, number of samples since pygame 1.8.
+        FREQ, SIZE, CHAN = pygame.mixer.get_init()
+        pygame.mixer.init(FREQ, SIZE, CHAN, BUFFER)
 
-vehicle.mode=VehicleMode("RTL") #after the robot has gone through all the waypoints this should bring it back to its original location
+        clock = pygame.time.Clock()
+        pygame.mixer.music.load(audiofile)
+        pygame.mixer.music.play()
+        while pygame.mixer.music.get_busy():
+            print "Playing..."
+            clock.tick(1000)
 
 
 
+"""this is test code for the audio
+robo = Navigator()
+robo.initMixer()
+robo.PlayAudio('./tests/SampleAudio_0.4mb.mp3')
+"""
