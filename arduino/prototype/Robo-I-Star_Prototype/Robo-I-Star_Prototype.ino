@@ -48,10 +48,10 @@ void loop() {
   }
 
   //this makes all the wheels turn at the same time
-  FrontL.writeMicroseconds(dir);
-  FrontR.writeMicroseconds(dir);
-  BackR.writeMicroseconds(3000-dir); //if you comment out these BackR,BackL lines then just the front two wheels will turn
-  BackL.writeMicroseconds(3000-dir);
+  FrontL.writeMicroseconds(map(dir,1000,2000,2500,500));
+  FrontR.writeMicroseconds(map(dir,1000,2000,2500,500));
+  BackR.writeMicroseconds(map(dir,1000,2000,2500,500));
+  BackL.writeMicroseconds(map(dir,1000,2000,2500,500));
 }
 
 void forward(int a){
