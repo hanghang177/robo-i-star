@@ -2,8 +2,8 @@ from dronekit import connect,LocationGlobal,VehicleMode
 import pygame
 
 """
-TODO: 
-* file io for initilizer when give waypoint file--will waypoint files have waypoint name as well?
+TO DO: 
+* add a second paramter to initializer like a key that tells the robot which waypoints correspond to which locations
 * find out how to initialize audio file array (probs more file io)
 * create a function that can go to a given waypoint and back to home
 """
@@ -19,6 +19,26 @@ class Navigator:
         self.audio = []
         self.waypoints = []  # note it's in the format latitude,longitude
         currentAlt = self.vehicle.location.global_frame.alt
+
+        f = open("example_waypoint.waypoints", 'r')
+        for line in f:
+            values = line.split()
+            lat, lon = 0, 0
+            for w in values:
+                try:
+                    w = float(w)
+                except ValueError:
+                    continue
+                if w < 40.2 and w > 40.1:
+                    lon = w
+                elif w < -88.1 and w > -88.3:
+                    lat = w
+            if (lat, lon) != (0, 0):
+                print "Waypoints: ", lat, lon, "loaded"
+                self.waypoints.append(LocationGlobal(lat, lon, currentAlt))
+
+        f.close()
+
 
     def __init__(self):#if no file is given, this will simply initialize the waypoints to what I originally found on google
         connection_string = "COM6"
@@ -76,4 +96,29 @@ class Navigator:
 robo = Navigator()
 robo.initMixer()
 robo.PlayAudio('./tests/SampleAudio_0.4mb.mp3')
+"""
+
+"""this code tests the waypoint io logic 
+waypoints = []  # note it's in the format latitude,longitude
+currentAlt = 0
+
+f =open("example_waypoint.waypoints",'r')
+for line in f:
+    values = line.split()
+    lat,lon=0,0
+    for w in values:
+        try:
+            w=float(w)
+        except ValueError:
+            continue
+        if w<40.2 and w>40.1:
+            lon = w
+        elif w<-88.1 and w>-88.3:
+            lat =w
+    if (lat,lon)!=(0,0):
+        print lat,lon
+        waypoints.append(LocationGlobal(lat,lon,currentAlt))
+
+f.close()
+print waypoints
 """
