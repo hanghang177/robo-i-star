@@ -1,0 +1,6 @@
+<launch>
+	<node pkg="rplidar_ros" name="lidar" type="rplidarNode" output="screen"/>
+
+	<node pkg="lidar" name="obstacleAvoidance" type="obstacleAvoidance" output="screen"/>
+
+</launch>
