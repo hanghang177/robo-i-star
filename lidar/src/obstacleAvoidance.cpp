@@ -70,7 +70,13 @@
 #include <sensor_msgs/LaserScan.h>
 #include <pcl/filters/passthrough.h>
 #include <pcl/filters/statistical_outlier_removal.h>
-
+#include <pcl/ModelCoefficients.h>
+#include <pcl/filters/extract_indices.h>
+#include <pcl/filters/voxel_grid.h>
+#include <pcl/features/normal_3d.h>
+#include <pcl/kdtree/kdtree.h>
+#include <pcl/segmentation/sac_segmentation.h>
+#include <pcl/segmentation/extract_clusters.h>
 typedef pcl::PointXY  Point2D;
 typedef pcl::PointXYZ Point3D;
 typedef pcl::PointCloud<Point2D> PointCloud2D;
@@ -124,20 +130,78 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
     // pass_x.setFilterFieldName("x");
     // pass_x.setFilterLimits(0.0, 1.0);
     // pass_x.filter(*cloud3D_filtered);
-
+    //Statistical outlier filter
     pcl::StatisticalOutlierRemoval<Point3D> sor;
     sor.setInputCloud(cloud3D);
     sor.setMeanK(50);
     sor.setStddevMulThresh(1);
     sor.filter(*cloud3D_filtered);
+
+    //Downsample data maybe?
+
+
+
+    //Segmentation object
+    pcl::SACSegmentation<Point3D> seg;
+    PointCloud3D::Ptr cloud_f (new PointCloud3D);
+    pcl::PointIndices::Ptr inliers (new pcl::PointIndices);
+    PointCloud3D::Ptr cloud_plane (new PointCloud3D);
+    //Cloud for storing coefficients
+    pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
+    pcl::PCDWriter writer;
+    seg.setOptimizeCoefficients (true);
+    seg.setModelType (pcl::SACMODEL_PLANE);
+    seg.setMethodType (pcl::SAC_RANSAC);
+    seg.setMaxIterations (100);
+    seg.setDistanceThreshold (0.02);
+
+    int i = 0, nr_points = (int) cloud3D_filtered->points.size ();
+    while (cloud3D_filtered->points.size () > .3 * nr_points) {
+    	seg.setInputCloud (cloud3D_filtered);
+    	seg.segment (*inliers, *coefficients);
+    	//If it's 0 then there aren't any point that are not outliers
+    	if (inliers->indices.size () == 0) {
+    		std::cout << "Couldn't estimate a planar model for the given dataset.\n";
+    		break;
+    	}
+
+    	//Extract the planar inliers
+    	pcl::ExtractIndices<Point3D> extract;
+    	extract.setInputCloud (cloud3D_filtered);
+    	extract.setIndices (inliers);
+    	extract.setNegative (false);
+
+    	//Get the points associated with the planar surface
+    	extract.filter (*cloud_plane);
+    	std::cout << "PointCloud representing the planar component: " << cloud_plane->points.size () << " data points\n";
+
+    	//Remove the planar inliers, extract the rest.
+    	extract.setNegative (true);
+    	extract.filter (*cloud_f);
+    	*cloud3D_filtered = *cloud_f;
+    }
+
+    //Creating the Kd tree for search method of extraction
+    pcl::search::KdTree<Point3D>::Ptr tree (new pcl::search::KdTree<Point3D>);
+    tree->setInputCloud (cloud3D_filtered);
+    //Vector to store all the clusters
+    std::vector<pcl::PointIndices> cluster_indices;
+    pcl::EuclideanClusterExtraction<Point3D> ec;
+    ec.setClusterTolerance (0.02);
+    ec.setMinClusterSize (20);
+    ec.setMaxClusterSize (200);
+    ec.setSearchMethod (tree);
+    ec.setInputCloud (cloud3D_filtered);
+    ec.extract (cluster_indices);
+
     cloud3D->header.stamp = ros::Time::now().toNSec();
 
-    PointCloud2D::Ptr cloud(new PointCloud2D);
-    PointCloud3Dto2D(*cloud3D, *cloud);
-    ROS_INFO ("Starting");
-    for (int i = 0; i < cloud->points.size(); i++) {
-    	ROS_INFO ("(%f, %f)\n", cloud->points[i].x, cloud->points[i].y);
-	}
+    PointCloud2D::Ptr cloud(new PointCloud2D); 
+    PointCloud3Dto2D(*cloud3D_filtered, *cloud);
+    //ROS_INFO ("Starting");
+ //    for (int i = 0; i < cloud->points.size(); i++) {
+ //    	ROS_INFO ("(%f, %f)\n", cloud->points[i].x, cloud->points[i].y);
+	// }
 
     pub.publish(cloud);
 }
