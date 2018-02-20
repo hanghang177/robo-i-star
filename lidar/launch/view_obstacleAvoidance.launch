@@ -1,0 +1,5 @@
+<launch>
+  <include file="$(find lidar)/launch/obstacleAvoidance.launch" />
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find lidar)/launch/lidar.rviz" />
+</launch>
