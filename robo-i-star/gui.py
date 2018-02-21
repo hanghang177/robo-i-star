@@ -33,5 +33,5 @@ class UI(tk.Tk):
         panel.bind("<Button-1>",click)
         panel.pack(side="bottom", fill="both", expand="yes")
 
-
-UI().mainloop()
+if __name__ == "__main__":
+    UI().mainloop()
