@@ -3,6 +3,8 @@ import pygame
 import LocationAudio
 import gui
 
+targetbuilding = ""
+returntrip = False
 
 if __name__ == "__main__":
     # Main function
@@ -12,7 +14,8 @@ if __name__ == "__main__":
         # Get User click on map to generate destination
         # Waypoint generate & upload to Ardurover
     ui.mainloop()
-
+    targetbuilding =  ui.location.get()
+    print targetbuilding
     # ROS
         # Get obstacles
         # If too close --> Manual mode w/ pwm instructions
