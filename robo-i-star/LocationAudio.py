@@ -9,17 +9,25 @@ TO DO:
 * create a function that can go to a given waypoint and back to home
 """
 
-connection_string = "COM6"
+#connection_string = "COM6"
+connection_string = ""
 baudrate = 57600
 
 class Navigator:
     def __init__(self, fwaypoints):#if given a file of waypoints this will initialize the waypoints using the file
         global connection_string
         global baudrate
+
+        if not connection_string:
+            import dronekit_sitl
+            sitl = dronekit_sitl.start_default()
+            connection_string = sitl.connection_string()
+
         print('Connecting to vehicle on: %s' % connection_string)
         self.vehicle = connect(connection_string, baud=baudrate, wait_ready=False)
 
         # locations, their audios and their waypoints are stored in parallel arrays
+        self.locationindex = -1
         self.locations = []
         self.audio = []
         self.waypoints = []  # note it's in the format latitude,longitude
@@ -47,9 +55,16 @@ class Navigator:
 
 
     def __init__(self):#if no file is given, this will simply initialize the waypoints to what I originally found on google
-        connection_string = "COM6"
+        global connection_string
+        global baudrate
+
+        if not connection_string:
+            import dronekit_sitl
+            sitl = dronekit_sitl.start_default()
+            connection_string = sitl.connection_string()
+
         print('Connecting to vehicle on: %s' % connection_string)
-        self.vehicle = connect(connection_string, baud=57600, wait_ready=False)
+        self.vehicle = connect(connection_string, baud=baudrate, wait_ready=False)
 
         # locations, their audios and their waypoints are stored in parallel arrays
         self.locations = ["Grainger", "Talbot", "Everitt", "Engineering Hall", "Material Science Building",
@@ -157,6 +172,31 @@ class Navigator:
                 break
             time.sleep(1)
         self.vehicle.mode = VehicleMode("Manual")
+
+    def pause_mission(self):
+        self.vehicle.mode = VehicleMode("Manual")
+
+    def continue_mission(self):
+        self.vehicle.mode = VehicleMode("AUTO")
+        missionsize = self.vehicle.commands.count
+        while True:
+            nextwaypoint = self.vehicle.commands.next
+            if nextwaypoint == missionsize - 1:
+                break
+            time.sleep(1)
+        self.vehicle.mode = VehicleMode("Manual")
+
+    def setLocationindex(self, locationindex):
+        self.locationindex = locationindex
+
+    def gettargetlocation(self):
+        return self.locations[self.locationindex]
+
+    def getaudio(self):
+        return self.audio[self.locationindex]
+
+    def getcurrentmission(self):
+        return self.missionfiles[self.locationindex]
 
 """this is test code for the audio
 robo = Navigator()
