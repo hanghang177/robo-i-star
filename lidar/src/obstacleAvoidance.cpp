@@ -1,69 +1,3 @@
-// #include <stdio.h>
-// #include "ros/ros.h"
-// #include <iostream>
-// #include "sensor_msgs/LaserScan.h"
-// #include "pcl_ros/point_cloud.h"
-// #include "pcl/point_types.h"
-// #include "pcl/filters/passthrough.h"
-// #include "pcl/filters/statistical_outlier_removal.h"
-
-// ros::Publisher pub;
-// int frameCount = 0;
-// typedef pcl::PointCloud<pcl::PointXY> PointCloud;
-// void scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
-// {
-// 	PointCloud::Ptr cloud (new PointCloud);
-// 	cloud->header.frame_id = "Frame: " + frameCount;
-// 	frameCount++;
-//     int count = scan->scan_time / scan->time_increment;
-//     cloud->width = count;
-//     cloud->height = 1;
-//     //ROS_INFO("I heard a laser scan %s[%d]:", scan->header.frame_id.c_str(), count);
-//     //ROS_INFO("angle_range, %f, %f", RAD2DEG(scan->angle_min), RAD2DEG(scan->angle_max));
-//     int actualSize = 0;
-//     for(int i = 0; i < count; i++) {
-//     	float radians = scan->angle_min + scan->angle_increment * i;
-//     	float range = scan->ranges[i];
-//     	if (!(range > scan->range_max) && !(range < scan->range_min)) {
-//     		double x = range * cos(radians);
-//     		double y = range * sin(radians);
-//     		pcl::PointXY point;
-//     		point.x = x;
-//     		point.y = y;
-//     		cloud->points.push_back (point);
-//     		actualSize++;
-//     	}
-//     }
-//     cloud->width = actualSize;
-//     //Declare new cloud for after filtering
-//     pcl::PassThrough<pcl::PointXY> pass_x;
-//     pcl::PassThrough<pcl::PointXY> pass_y;
-
-//     pass_x.setInputCloud (cloud);
-//     //Filter the cloud
-//     // pcl::StatisticalOutlierRemoval<pcl::PointXY> sor;
-//     // sor.setInputCloud (cloud);
-//     // sor.setMeanK (50);
-//     // sor.setStddevMulThresh (1.0);
-//     // sor.filter (*filtered);
-//     //cloud->header.stamp = ros::Time::now().toNSec();
-//     pub.publish (cloud);
-
-// }
-
-// int main(int argc, char **argv)
-// {
-//     ros::init(argc, argv, "obstacleAvoidance");
-//     ros::NodeHandle n;
-
-//     ros::Subscriber sub = n.subscribe<sensor_msgs::LaserScan>("/scan", 10, scanCallback);
-
-//     pub = n.advertise<PointCloud> ("cloud", 10);
-
-//     ros::spin();
-
-//     return 0;
-// }
 #include <ros/ros.h>
 #include <pcl/point_types.h>
 #include <pcl_ros/point_cloud.h>
@@ -81,11 +15,24 @@ typedef pcl::PointXY  Point2D;
 typedef pcl::PointXYZ Point3D;
 typedef pcl::PointCloud<Point2D> PointCloud2D;
 typedef pcl::PointCloud<Point3D> PointCloud3D;
-
+//The range at which all objects should keep away from
+float robotRadius;
 ros::Publisher pub;
 int frameCount = 0;
+//The numbers to filter out bad values
 float range_min = 0;
 float range_max = 10000;
+//Class to represent all objects as a simple circle cluster
+class Circle {
+public:
+	int radius;
+	int centerX, centerY;
+	Circle () {
+		radius = 0;
+		centerX = 0;
+		centerY = 0;
+	}
+};
 inline void PointCloud3Dto2D(PointCloud3D& in, PointCloud2D& out)
 {
   out.width = in.width;
@@ -125,6 +72,8 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
     // Declare new cloud for filtering
     PointCloud3D::Ptr cloud3D_filtered(new PointCloud3D);
 
+    //std::cout << "Original scan size: " << cloud3D->points.size() << "\n";
+
     // pcl::PassThrough<Point3D> pass_x;
     // pass_x.setInputCloud(cloud3D);
     // pass_x.setFilterFieldName("x");
@@ -136,7 +85,7 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
     sor.setMeanK(50);
     sor.setStddevMulThresh(1);
     sor.filter(*cloud3D_filtered);
-
+    std::cout << "Filtered cloud using sor size: " << cloud3D_filtered->points.size() << "\n";
     //Downsample data maybe?
 
 
@@ -148,21 +97,27 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
     PointCloud3D::Ptr cloud_plane (new PointCloud3D);
     //Cloud for storing coefficients
     pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
-    pcl::PCDWriter writer;
     seg.setOptimizeCoefficients (true);
-    seg.setModelType (pcl::SACMODEL_PLANE);
+    seg.setModelType (pcl::SACMODEL_LINE);
     seg.setMethodType (pcl::SAC_RANSAC);
+    //const Eigen::Vector3f ax(0,0,1);
+    //seg.setAxis(ax);
+    //Possibly may need to adjust this?
     seg.setMaxIterations (100);
-    seg.setDistanceThreshold (0.02);
-
-    int i = 0, nr_points = (int) cloud3D_filtered->points.size ();
-    while (cloud3D_filtered->points.size () > .3 * nr_points) {
+    seg.setDistanceThreshold (10);
+    std::vector<pcl::PointIndices::Ptr> inliers_group;
+    std::vector<pcl::ModelCoefficients::Ptr> coefficients_group;
+     int i = 0, nr_points = (int) cloud3D_filtered->points.size ();
+     while (cloud3D_filtered->points.size () > .3 * nr_points) {
+    	std::cout << "Coefficients: " << "\n";
     	seg.setInputCloud (cloud3D_filtered);
     	seg.segment (*inliers, *coefficients);
+    	for (int i = 0; i < coefficients->values.size(); i++) {
+    		std::cout << (i + 1) << ": " << coefficients->values[i] << "\n";
+    	}
     	//If it's 0 then there aren't any point that are not outliers
     	if (inliers->indices.size () == 0) {
     		std::cout << "Couldn't estimate a planar model for the given dataset.\n";
-    		break;
     	}
 
     	//Extract the planar inliers
@@ -170,40 +125,94 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
     	extract.setInputCloud (cloud3D_filtered);
     	extract.setIndices (inliers);
     	extract.setNegative (false);
-
+    	std::cout << "Inliers size: " << inliers->indices.size() << "\n";
     	//Get the points associated with the planar surface
     	extract.filter (*cloud_plane);
+    	inliers_group.push_back(inliers);
+    	coefficients_group.push_back(coefficients);
     	std::cout << "PointCloud representing the planar component: " << cloud_plane->points.size () << " data points\n";
-
     	//Remove the planar inliers, extract the rest.
-    	extract.setNegative (true);
-    	extract.filter (*cloud_f);
-    	*cloud3D_filtered = *cloud_f;
-    }
-
+    	 extract.setNegative (true);
+    	 extract.filter (*cloud_f);
+    	 *cloud3D_filtered = *cloud_f;
+     }
+     std::cout << "The number of coefficients is: " << coefficients_group.size() << "\n";
+    std::cout << "Cloud_filtered size:" << cloud3D_filtered->points.size() << "\n";
+ //    float model_ss_ (0.04f); 
+	// float scene_ss_ (0.04f); 
+	// float rf_rad_ (0.2f); 
+	// float descr_rad_ (1.8f); 
+	// float cg_size_ (0.4f); 
+	// float cg_thresh_ (-0.5f); 
     //Creating the Kd tree for search method of extraction
     pcl::search::KdTree<Point3D>::Ptr tree (new pcl::search::KdTree<Point3D>);
-    tree->setInputCloud (cloud3D_filtered);
+    tree->setInputCloud (cloud_plane);
     //Vector to store all the clusters
     std::vector<pcl::PointIndices> cluster_indices;
     pcl::EuclideanClusterExtraction<Point3D> ec;
-    ec.setClusterTolerance (0.02);
-    ec.setMinClusterSize (20);
-    ec.setMaxClusterSize (200);
+    ec.setClusterTolerance (50);
+    ec.setMinClusterSize (10);
+    ec.setMaxClusterSize (100);
     ec.setSearchMethod (tree);
     ec.setInputCloud (cloud3D_filtered);
     ec.extract (cluster_indices);
-
+    std::cout << "Cluster indices size: " << cluster_indices.size() << "\n";
     cloud3D->header.stamp = ros::Time::now().toNSec();
+    std::vector < pcl::PointCloud<pcl::PointXYZ>::Ptr, Eigen::aligned_allocator <pcl::PointCloud <pcl::PointXYZ>::Ptr > > clusters;
+    //PointCloud2D::Ptr cloud(new PointCloud2D); 
+    //PointCloud3Dto2D(*cloud3D_filtered, *cloud);
+    std::vector<pcl::PointIndices>::const_iterator it;
+	std::vector<int>::const_iterator pit;
+	//Declare array for storing the centers and radii of all obstacles.
+	std::vector<Circle> objects;
+	float xSum, ySum;
+	for(it = cluster_indices.begin(); it != cluster_indices.end(); ++it) {
+		xSum = 0, ySum = 0;
+        //PointCloud3D::Ptr cloud_cluster (new PointCloud3D);
+        PointCloud3D::Ptr cluster (new PointCloud3D);
+        std::cout << "New cluster\n";
+        std::cout << "--------------------------\n";
+        for(pit = it->indices.begin(); pit != it->indices.end(); pit++) {
+        //push_back: add a point to the end of the existing vector
+        		xSum += cloud3D_filtered->points[*pit].x;
+        		ySum += cloud3D_filtered->points[*pit].y;
+        		cluster->points.push_back(cloud3D_filtered->points[*pit]);
+                //cloud_cluster->points.push_back(cloud3D_filtered->points[*pit]); 
+         		//std::cout << "(" << cloud_cluster->points[*pit].x << ", " << cloud_cluster->points[*pit].y << ")\n";
+        }
+        Circle obj;
+        int size = it->indices.size();
+        obj.centerX = xSum / size;
+        obj.centerY = ySum / size;
+        //Find the max distance from the center of the cluster
+        int maxMagnitude = 0;
+        for (int i = 0; i < cluster->points.size(); i++) {
+        	int mag = sqrt(pow(cluster->points[i].x - obj.centerX, 2) + pow(cluster->points[i].y - obj.centerY, 2));
+        	if (mag > maxMagnitude) {
+        		maxMagnitude = mag;
+        	}
+        }
+        obj.radius = maxMagnitude;
+        objects.push_back(obj);
+        clusters.push_back(cluster);
+        //Merge current clusters to whole point cloud
+    //*clustered_cloud += *cloud_cluster;
 
-    PointCloud2D::Ptr cloud(new PointCloud2D); 
-    PointCloud3Dto2D(*cloud3D_filtered, *cloud);
-    //ROS_INFO ("Starting");
- //    for (int i = 0; i < cloud->points.size(); i++) {
- //    	ROS_INFO ("(%f, %f)\n", cloud->points[i].x, cloud->points[i].y);
-	// }
+  }
+  int numThreats = 0;
+  for (int i = 0; i < objects.size(); i++) {
+  		int distance = sqrt(pow(objects[i].centerX, 2) + pow(objects[i].centerY, 2)) - robotRadius - objects[i].radius;
+  		//Robot is touching or inside the object
+  		if (distance <= 0) {
+  			//Do something drastic!
+  		}
 
-    pub.publish(cloud);
+  }
+  //Find centroid of the circle by averaging the x and y coords
+  //Then find the radius of said circle 
+	//clustered_cloud->header.frame_id = "/frame " + frameCount;
+	//pcl_conversions::toPCL(ros::Time::now(), clustered_cloud->header.stamp);
+	//pub.publish(*clustered_cloud);
 }
 
 int main(int argc, char** argv)
