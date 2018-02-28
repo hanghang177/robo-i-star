@@ -1,7 +1,6 @@
-from dronekit import connect, VehicleMode, LocationGlobalRelative, LocationGlobal, Command
+from dronekit import connect,LocationGlobal,VehicleMode, Command
 import pygame
 import time
-import math
 
 """
 TO DO: 
@@ -10,23 +9,23 @@ TO DO:
 * create a function that can go to a given waypoint and back to home
 """
 
-# connection_string = "COM6"
+#connection_string = "COM6"
 connection_string = ""
 baudrate = 57600
 
-
 class Navigator:
-    def __init__(self, fwaypoints):  # if given a file of waypoints this will initialize the waypoints using the file
+    def __init__(self, fwaypoints):#if given a file of waypoints this will initialize the waypoints using the file
         global connection_string
         global baudrate
 
         if not connection_string:
             import dronekit_sitl
-            sitl = dronekit_sitl.start_default(lat= 40.111718, lon= -88.227020)
+            sitl = dronekit_sitl.start_default()
             connection_string = sitl.connection_string()
 
         print('Connecting to vehicle on: %s' % connection_string)
         self.vehicle = connect(connection_string, baud=baudrate, wait_ready=False)
+
         # locations, their audios and their waypoints are stored in parallel arrays
         self.locationindex = -1
         self.locations = []
@@ -54,14 +53,14 @@ class Navigator:
 
         f.close()
 
-    def __init__(
-            self):  # if no file is given, this will simply initialize the waypoints to what I originally found on google
+
+    def __init__(self):#if no file is given, this will simply initialize the waypoints to what I originally found on google
         global connection_string
         global baudrate
 
         if not connection_string:
             import dronekit_sitl
-            sitl = dronekit_sitl.start_default(lat=40.111718, lon=-88.227020)
+            sitl = dronekit_sitl.start_default()
             connection_string = sitl.connection_string()
 
         print('Connecting to vehicle on: %s' % connection_string)
@@ -69,45 +68,22 @@ class Navigator:
 
         # locations, their audios and their waypoints are stored in parallel arrays
         self.locations = ["Grainger", "Talbot", "Everitt", "Engineering Hall", "Material Science Building",
-                          "Mechanical Engineering Lab"]
-        self.audio = ["audio/Grainger.mp3", "audio/Talbot.mp3", "audio/Everitt.mp3", "audio/Engineering Hall.mp3",
-                      "audio/Material Science Building.mp3",
-                      "audio/Mechanical Engineering Lab.mp3"]
+                     "Mechanical Engineering Lab"]
+        self.audio = ["audio/Grainger.mp3", "audio/Talbot.mp3", "audio/Everitt.mp3", "audio/Engineering Hall.mp3", "audio/Material Science Building.mp3",
+                     "audio/Mechanical Engineering Lab.mp3"]
         self.waypoints = []  # note it's in the format latitude,longitude
         # note these waypoints were taken from google maps locations right infront of the building--they can and should be adjusted if necessary
-        self.missionfiles = ["mission/grainger_forward.waypoints", "mission/talbot_lab_forward.waypoints",
-                             "mission/everitt_lab_forward.waypoints",
-                             "mission/engineering_hall_forward.waypoints", "mission/material_science_forward.waypoints",
-                             "mission/mechanical_lab_forward.waypoints", "mission/grainger_backwards.waypoints",
-                             "mission/talbot_lab_backwards.waypoints", "mission/everitt_lab_backwards.waypoints",
-                             "mission/engineering_hall_backwards.waypoints",
-                             "mission/material_science_backwards.waypoints",
-                             "mission/mechanical_lab_backwards.waypoints"]
-        currentAlt = self.vehicle.location.global_frame.alt
+        self.missionfiles = []
+        currentAlt= self.vehicle.location.global_frame.alt
         self.waypoints.append(LocationGlobal(-88.226958, 40.112232, currentAlt))  # Grainger
         self.waypoints.append(LocationGlobal(-88.227616, 40.111863, currentAlt))  # Talbot
         self.waypoints.append(LocationGlobal(-88.227629, 40.111151, currentAlt))  # Everitt
         self.waypoints.append(LocationGlobal(-88.226949, 40.111126, currentAlt))  # Engineering Hall
         self.waypoints.append(LocationGlobal(-88.226505, 40.111128, currentAlt))  # Material Science Building
         self.waypoints.append(LocationGlobal(-88.226678, 40.111692, currentAlt))  # Mechanical Engineering Building
-        while not self.vehicle.is_armable:
-            print(" Waiting for vehicle to initialise...")
-            time.sleep(1)
-        self.vehicle.mode = VehicleMode("GUIDED")
-        self.vehicle.armed = True
-        while not self.vehicle.armed:
-            print(" Waiting for arming...")
-            time.sleep(1)
-        self.vehicle.simple_takeoff(10)
-        while True:
-            print(" Altitude: ", self.vehicle.location.global_relative_frame.alt)
-            if self.vehicle.location.global_relative_frame.alt >= 10 * 0.95:  # Trigger just below target alt.
-                print("Reached target altitude")
-                break
-            time.sleep(1)
 
     def GoToAll(self):
-        # this function goes through all the waypoints
+        #this function goes through all the waypoints
         self.vehicle.mode = VehicleMode("Guided")
         self.vehicle.armed = True
 
@@ -118,14 +94,13 @@ class Navigator:
                 currentloc = LocationGlobal(lat, lon, self.vehicle.location.global_frame.alt)
                 LocationGlobal()
                 self.vehicle.simple_goto(self.waypoints[x])
-                # after it gets to the desired location it should play the audio
+            # after it gets to the desired location it should play the audio
 
         self.PlayAudio(self.audio[x])
 
-        self.vehicle.mode = VehicleMode(
-            "RTL")  # after the robot has gone through all the waypoints this should bring it back to its original location
+        self.vehicle.mode = VehicleMode("RTL")  # after the robot has gone through all the waypoints this should bring it back to its original location
 
-    def PlayAudio(self, audiofile):  # this function is used to play audio
+    def PlayAudio(self,audiofile):#this function is used to play audio
         pygame.mixer.init()
         BUFFER = 3072  # audio buffer size, number of samples since pygame 1.8.
         FREQ, SIZE, CHAN = pygame.mixer.get_init()
@@ -134,61 +109,11 @@ class Navigator:
         clock = pygame.time.Clock()
         pygame.mixer.music.load(audiofile)
         pygame.mixer.music.play()
-        print "Playing..."
         while pygame.mixer.music.get_busy():
+            print "Playing..."
             clock.tick(1000)
 
-    def get_location_metres(self,original_location, dNorth, dEast):
-        """
-        Returns a LocationGlobal object containing the latitude/longitude `dNorth` and `dEast` metres from the
-        specified `original_location`. The returned Location has the same `alt` value
-        as `original_location`.
-
-        The function is useful when you want to move the vehicle around specifying locations relative to
-        the current vehicle position.
-        The algorithm is relatively accurate over small distances (10m within 1km) except close to the poles.
-        For more information see:
-        http://gis.stackexchange.com/questions/2951/algorithm-for-offsetting-a-latitude-longitude-by-some-amount-of-meters
-        """
-        earth_radius = 6378137.0  # Radius of "spherical" earth
-        # Coordinate offsets in radians
-        dLat = dNorth / earth_radius
-        dLon = dEast / (earth_radius * math.cos(math.pi * original_location.lat / 180))
-
-        # New position in decimal degrees
-        newlat = original_location.lat + (dLat * 180 / math.pi)
-        newlon = original_location.lon + (dLon * 180 / math.pi)
-        return LocationGlobal(newlat, newlon, original_location.alt)
-
-    def get_distance_metres(self,aLocation1, aLocation2):
-        """
-        Returns the ground distance in metres between two LocationGlobal objects.
-
-        This method is an approximation, and will not be accurate over large distances and close to the
-        earth's poles. It comes from the ArduPilot test code:
-        https://github.com/diydrones/ardupilot/blob/master/Tools/autotest/common.py
-        """
-        dlat = aLocation2.lat - aLocation1.lat
-        dlong = aLocation2.lon - aLocation1.lon
-        return math.sqrt((dlat * dlat) + (dlong * dlong)) * 1.113195e5
-
-    def distance_to_current_waypoint(self):
-        """
-        Gets distance in metres to the current waypoint.
-        It returns None for the first waypoint (Home location).
-        """
-        nextwaypoint = self.vehicle.commands.next
-        if nextwaypoint == 0:
-            return None
-        missionitem = self.vehicle.commands[nextwaypoint - 1]  # commands are zero indexed
-        lat = missionitem.x
-        lon = missionitem.y
-        alt = missionitem.z
-        targetWaypointLocation = LocationGlobalRelative(lat, lon, alt)
-        distancetopoint = self.get_distance_metres(self.vehicle.location.global_frame, targetWaypointLocation)
-        return distancetopoint
-
-    def readmission(self, aFileName):
+    def readmission(self,aFileName):
         """
         Load a mission from a file into a list. The mission definition is in the Waypoint file
         format (http://qgroundcontrol.org/mavlink/waypoint_protocol#waypoint_file_format).
@@ -222,7 +147,7 @@ class Navigator:
                     missionlist.append(cmd)
         return missionlist
 
-    def upload_mission(self, aFileName):
+    def upload_mission(self,aFileName):
         """
         Upload a mission from a file.
         """
@@ -238,24 +163,18 @@ class Navigator:
         self.vehicle.commands.upload()
 
     def run_mission(self):
-        self.vehicle.commands._vehicle._current_waypoint = 1
+        self.vehicle.commands.next = 0
         self.vehicle.mode = VehicleMode("AUTO")
         missionsize = self.vehicle.commands.count
-        print ("missionsize: " + str(missionsize))
-        lastwaypoint = -1
         while True:
             nextwaypoint = self.vehicle.commands.next
-            print('Distance to waypoint (%s): %s' % (nextwaypoint, self.distance_to_current_waypoint()))
-            if nextwaypoint != lastwaypoint:
-                print ("At " + str(nextwaypoint))
-                lastwaypoint = nextwaypoint
-            if nextwaypoint == missionsize - 1:
+            if nextwaypoint == missionsize-1:
                 break
             time.sleep(1)
-        self.vehicle.mode = VehicleMode("GUIDED")
+        self.vehicle.mode = VehicleMode("Manual")
 
     def pause_mission(self):
-        self.vehicle.mode = VehicleMode("GUIDED")
+        self.vehicle.mode = VehicleMode("Manual")
 
     def continue_mission(self):
         self.vehicle.mode = VehicleMode("AUTO")
@@ -265,7 +184,7 @@ class Navigator:
             if nextwaypoint == missionsize - 1:
                 break
             time.sleep(1)
-        self.vehicle.mode = VehicleMode("GUIDED")
+        self.vehicle.mode = VehicleMode("Manual")
 
     def setLocationindex(self, locationindex):
         self.locationindex = locationindex
@@ -278,7 +197,6 @@ class Navigator:
 
     def getcurrentmission(self):
         return self.missionfiles[self.locationindex]
-
 
 """this is test code for the audio
 robo = Navigator()
