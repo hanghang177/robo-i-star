@@ -27,6 +27,14 @@ if __name__ == "__main__":
         navigator.setLocationindex(targetbuildingindex)
         print ("The target location is: " + navigator.gettargetlocation())
 
+        navigator.upload_mission(navigator.missionfiles[targetbuildingindex])
+        navigator.run_mission()
+        navigator.PlayAudio(navigator.audio[targetbuildingindex])
+        navigator.upload_mission(navigator.missionfiles[targetbuildingindex+6])
+        navigator.run_mission()
+
+        print ('mission finished')
+
             #Ardurover Get Location(Waypoint)
             #Ardurover Play Audio
         # GPS Navigation
