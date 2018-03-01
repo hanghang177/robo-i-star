@@ -54,6 +54,7 @@ if __name__ == "__main__":
 
         # while no obstacle detected --> run automated mission control
         navigator.upload_mission(currentmission)
+        navigator.run_mission()
 
         # if obstacle detected,
         # navigator.pause_mission()
