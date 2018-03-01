@@ -11,22 +11,27 @@
 #include <pcl/kdtree/kdtree.h>
 #include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/segmentation/extract_clusters.h>
+//#include "lidar/avoid.h"
 typedef pcl::PointXY  Point2D;
 typedef pcl::PointXYZ Point3D;
 typedef pcl::PointCloud<Point2D> PointCloud2D;
 typedef pcl::PointCloud<Point3D> PointCloud3D;
-//The range at which all objects should keep away from
-float robotRadius;
+//The range at which all objects should keep away from the robot
+float robotRadius = 5;
 ros::Publisher pub;
+//How many frames have been received and sent
 int frameCount = 0;
 //The numbers to filter out bad values
 float range_min = 0;
-float range_max = 10000;
-float xGain, yGain;
+float range_max = 10;
+//The amout the robot reacts when it finds an obstacle
+float xGain = 20, yGain = 10;
+//How sharp of a turn it will be when the robot finds an object
+float turnSharpness = 40;
 class Vector {
 public:
 	float x, y;
-	Vector (float xx, yy) {
+	Vector (float xx, float yy) {
 		x = xx;
 		y = yy;
 	}
@@ -236,6 +241,9 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
   		}
 
   }
+  if (numThreats == 0) {
+  	std::cout << "No current obstacles found within range\n";
+  }
   for (int i = 0; i < walls.size(); i++) {
   	float distance = abs(walls[i].c) / sqrt(pow(walls[i].a, 2) + pow(walls[i].b, 2));
   	if (distance <= robotRadius) {
@@ -248,6 +256,38 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
   for (int i = 0; i < distances.size(); i++) {
   		vecXSum += distances[i].x;
   		vecYSum += distances[i].y;
+  }
+  //Construct the message object to publish
+  int isObstacle = 0;
+  int motorLeft = 0;
+  int motorRight = 0;
+  if (numThreats > 0) {
+  	isObstacle = 1;
+  	if (vecXSum != 0) {
+  		//Object is close on the right
+  		if (vecXSum > 0) {
+  			std::cout << "Turning left to avoid objects on the right\n";
+  			motorRight = abs((1 / vecXSum) * xGain);
+  		}
+  		if (vecXSum < 0) {
+  			std::cout << "Turning right to avoid objects on the left\n";
+  			motorLeft = abs((1 / vecXSum) * xGain);
+  		}
+  		if (motorLeft == 0 && motorRight != 0) {
+  			motorLeft = turnSharpness;
+  		}
+  		if (motorRight == 0 && motorLeft != 0) {
+  			motorRight = turnSharpness;
+  		}
+  	}
+  	if (vecYSum != 0) {
+  		if (vecYSum > 0) {
+  			std::cout << "Obstacle is really close to the front of the robot\n" << " Stopping...\n";
+  			motorLeft = 0;
+  			motorRight = 0;
+  		}
+  	}
+  	//Just need to publish the finished message
   }
 	//Adjust the gain and output the right number here   
 }
