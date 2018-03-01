@@ -22,11 +22,33 @@ int frameCount = 0;
 //The numbers to filter out bad values
 float range_min = 0;
 float range_max = 10000;
+float xGain, yGain;
+class Vector {
+public:
+	float x, y;
+	Vector (float xx, yy) {
+		x = xx;
+		y = yy;
+	}
+};
+//A class to represent a wall as a line
+class Line {
+public:
+	float a, b, c;
+	PointCloud3D::Ptr line_points;
+	Line (pcl::ModelCoefficients::Ptr coef, PointCloud3D::Ptr cloud) {
+		line_points = cloud;
+		a = coef->values[0];
+		b = coef->values[1];
+		//Ignore z component of coefficients
+		c = coef->values[3];
+	}
+};
 //Class to represent all objects as a simple circle cluster
 class Circle {
 public:
-	int radius;
-	int centerX, centerY;
+	float radius;
+	float centerX, centerY;
 	Circle () {
 		radius = 0;
 		centerX = 0;
@@ -105,8 +127,9 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
     //Possibly may need to adjust this?
     seg.setMaxIterations (100);
     seg.setDistanceThreshold (10);
-    std::vector<pcl::PointIndices::Ptr> inliers_group;
-    std::vector<pcl::ModelCoefficients::Ptr> coefficients_group;
+    //std::vector<PointCloud3D::Ptr> inliers_group;
+    //std::vector<pcl::ModelCoefficients::Ptr> coefficients_group;
+    std::vector<Line> walls;
      int i = 0, nr_points = (int) cloud3D_filtered->points.size ();
      while (cloud3D_filtered->points.size () > .3 * nr_points) {
     	std::cout << "Coefficients: " << "\n";
@@ -118,6 +141,7 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
     	//If it's 0 then there aren't any point that are not outliers
     	if (inliers->indices.size () == 0) {
     		std::cout << "Couldn't estimate a planar model for the given dataset.\n";
+    		break;
     	}
 
     	//Extract the planar inliers
@@ -128,15 +152,17 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
     	std::cout << "Inliers size: " << inliers->indices.size() << "\n";
     	//Get the points associated with the planar surface
     	extract.filter (*cloud_plane);
-    	inliers_group.push_back(inliers);
-    	coefficients_group.push_back(coefficients);
+    	//inliers_group.push_back(inliers);
+    	//coefficients_group.push_back(coefficients);
+    	Line line (coefficients, cloud_plane);
+    	walls.push_back(line);
     	std::cout << "PointCloud representing the planar component: " << cloud_plane->points.size () << " data points\n";
     	//Remove the planar inliers, extract the rest.
     	 extract.setNegative (true);
     	 extract.filter (*cloud_f);
     	 *cloud3D_filtered = *cloud_f;
      }
-     std::cout << "The number of coefficients is: " << coefficients_group.size() << "\n";
+    //std::cout << "The number of coefficients is: " << coefficients_group.size() << "\n";
     std::cout << "Cloud_filtered size:" << cloud3D_filtered->points.size() << "\n";
  //    float model_ss_ (0.04f); 
 	// float scene_ss_ (0.04f); 
@@ -185,9 +211,9 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
         obj.centerX = xSum / size;
         obj.centerY = ySum / size;
         //Find the max distance from the center of the cluster
-        int maxMagnitude = 0;
+        float maxMagnitude = 0;
         for (int i = 0; i < cluster->points.size(); i++) {
-        	int mag = sqrt(pow(cluster->points[i].x - obj.centerX, 2) + pow(cluster->points[i].y - obj.centerY, 2));
+        	float mag = sqrt(pow(cluster->points[i].x - obj.centerX, 2) + pow(cluster->points[i].y - obj.centerY, 2));
         	if (mag > maxMagnitude) {
         		maxMagnitude = mag;
         	}
@@ -199,20 +225,31 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
     //*clustered_cloud += *cloud_cluster;
 
   }
+  //Finish getting vectors here
+  std::vector<Vector> distances;
   int numThreats = 0;
   for (int i = 0; i < objects.size(); i++) {
-  		int distance = sqrt(pow(objects[i].centerX, 2) + pow(objects[i].centerY, 2)) - robotRadius - objects[i].radius;
+  		float distance = sqrt(pow(objects[i].centerX, 2) + pow(objects[i].centerY, 2)) - objects[i].radius;
   		//Robot is touching or inside the object
-  		if (distance <= 0) {
-  			//Do something drastic!
+  		if (distance <= robotRadius) {
+  			numThreats++;
   		}
 
   }
-  //Find centroid of the circle by averaging the x and y coords
-  //Then find the radius of said circle 
-	//clustered_cloud->header.frame_id = "/frame " + frameCount;
-	//pcl_conversions::toPCL(ros::Time::now(), clustered_cloud->header.stamp);
-	//pub.publish(*clustered_cloud);
+  for (int i = 0; i < walls.size(); i++) {
+  	float distance = abs(walls[i].c) / sqrt(pow(walls[i].a, 2) + pow(walls[i].b, 2));
+  	if (distance <= robotRadius) {
+  		numThreats++;
+  	}
+  }
+  //Large negative number means close object on the left or bottom
+  //Large positive number means close object on the right or top
+  float vecXSum = 0, vecYSum = 0;
+  for (int i = 0; i < distances.size(); i++) {
+  		vecXSum += distances[i].x;
+  		vecYSum += distances[i].y;
+  }
+	//Adjust the gain and output the right number here   
 }
 
 int main(int argc, char** argv)
