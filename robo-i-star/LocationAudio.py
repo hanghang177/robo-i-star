@@ -159,7 +159,8 @@ class Navigator:
         self.vehicle.commands.upload()
 
     def run_mission(self):
-        self.vehicle.commands._vehicle._current_waypoint = 1
+        self.vehicle.commands._vehicle._current_waypoint = 2
+        self.vehicle.commands.next = 2
         self.vehicle.mode = VehicleMode("AUTO")
         missionsize = self.vehicle.commands.count
         print ("missionsize: " + str(missionsize))
@@ -170,7 +171,7 @@ class Navigator:
             if nextwaypoint != lastwaypoint:
                 print ("At " + str(nextwaypoint))
                 lastwaypoint = nextwaypoint
-            if nextwaypoint == missionsize - 1:
+            if nextwaypoint == missionsize:
                 break
             time.sleep(1)
         self.vehicle.mode = VehicleMode("GUIDED")
