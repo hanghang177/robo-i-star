@@ -1,0 +1,8 @@
+prefix=/home/joey/catkin_ws/devel
+
+Name: msgs
+Description: Description of msgs
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/joey/catkin_ws/devel/lib 
+Requires: 

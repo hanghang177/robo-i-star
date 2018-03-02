@@ -1,0 +1,8 @@
+prefix=/home/joey/catkin_ws/devel
+
+Name: lidar
+Description: Description of lidar
+Version: 0.0.0
+Cflags: -I/home/joey/catkin_ws/src/lidar/include
+Libs: -L/home/joey/catkin_ws/devel/lib -llidar
+Requires: message_runtime
