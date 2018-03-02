@@ -95,7 +95,7 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
         cloud3D->points.push_back(point3D);
     }
     cloud3D->width = cloud3D->points.size();
-
+    std::cout << "Incoming scan with " << cloud3D->width << " data points\n";
     // Declare new cloud for filtering
     PointCloud3D::Ptr cloud3D_filtered(new PointCloud3D);
 
@@ -112,7 +112,7 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
     sor.setMeanK(50);
     sor.setStddevMulThresh(1);
     sor.filter(*cloud3D_filtered);
-    std::cout << "Filtered cloud using sor size: " << cloud3D_filtered->points.size() << "\n";
+    std::cout << "Filtered cloud using sor now has " << cloud3D->points.size() << " data points\n";
     //Downsample data maybe?
 
 
@@ -137,12 +137,11 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
     std::vector<Line> walls;
      int i = 0, nr_points = (int) cloud3D_filtered->points.size ();
      while (cloud3D_filtered->points.size () > .3 * nr_points) {
-    	std::cout << "Coefficients: " << "\n";
     	seg.setInputCloud (cloud3D_filtered);
     	seg.segment (*inliers, *coefficients);
-    	for (int i = 0; i < coefficients->values.size(); i++) {
-    		std::cout << (i + 1) << ": " << coefficients->values[i] << "\n";
-    	}
+    	// for (int i = 0; i < coefficients->values.size(); i++) {
+    	// 	std::cout << (i + 1) << ": " << coefficients->values[i] << "\n";
+    	// }
     	//If it's 0 then there aren't any point that are not outliers
     	if (inliers->indices.size () == 0) {
     		std::cout << "Couldn't estimate a planar model for the given dataset.\n";
@@ -161,14 +160,16 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
     	//coefficients_group.push_back(coefficients);
     	Line line (coefficients, cloud_plane);
     	walls.push_back(line);
-    	std::cout << "PointCloud representing the planar component: " << cloud_plane->points.size () << " data points\n";
+    	//std::cout << "PointCloud representing the planar component: " << cloud_plane->points.size () << " data points\n";
+    	std::cout << "Coefficients are:\n a = " << coefficients->values[0] << ", b = " << coefficients->values[1] << ", c = " << coefficients->values[3] << "\n";  
     	//Remove the planar inliers, extract the rest.
     	 extract.setNegative (true);
     	 extract.filter (*cloud_f);
     	 *cloud3D_filtered = *cloud_f;
      }
+     std::cout << "There were a total of " << walls.size() << " walls\n";
     //std::cout << "The number of coefficients is: " << coefficients_group.size() << "\n";
-    std::cout << "Cloud_filtered size:" << cloud3D_filtered->points.size() << "\n";
+    
  //    float model_ss_ (0.04f); 
 	// float scene_ss_ (0.04f); 
 	// float rf_rad_ (0.2f); 
@@ -201,8 +202,6 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
 		xSum = 0, ySum = 0;
         //PointCloud3D::Ptr cloud_cluster (new PointCloud3D);
         PointCloud3D::Ptr cluster (new PointCloud3D);
-        std::cout << "New cluster\n";
-        std::cout << "--------------------------\n";
         for(pit = it->indices.begin(); pit != it->indices.end(); pit++) {
         //push_back: add a point to the end of the existing vector
         		xSum += cloud3D_filtered->points[*pit].x;
@@ -238,17 +237,34 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
   		//Robot is touching or inside the object
   		if (distance <= robotRadius) {
   			numThreats++;
+  			//Compute the vector and store it in a object if it is a threat
+  			float angle = atan(objects[i].centerY / objects[i].centerX);
+  			float x = distance * cos(angle);
+  			float y = distance * sin(angle);
+  			Vector vec(x, y);
+  			distances.push_back(vec);
   		}
 
   }
-  if (numThreats == 0) {
-  	std::cout << "No current obstacles found within range\n";
-  }
   for (int i = 0; i < walls.size(); i++) {
   	float distance = abs(walls[i].c) / sqrt(pow(walls[i].a, 2) + pow(walls[i].b, 2));
+  	//Mini algorithm to compute the vector between the origin and a line with given coefficients
+  	
   	if (distance <= robotRadius) {
+  		float scale = -walls[i].c / (pow(walls[i].a, 2) + pow(walls[i].b, 2));
+  		float slope = -walls[i].a / walls[i].b;
+  		if (slope > 0) {
+  			Vector vec(-abs(walls[i].a) * scale, abs(walls[i].b) * scale);
+  			distances.push_back(vec);
+  		} else {
+  			Vector vec(abs(walls[i].a) * scale, abs(walls[i].b) * scale);
+  			distances.push_back(vec);
+  		}
   		numThreats++;
   	}
+  }
+	 if (numThreats == 0) {
+  	std::cout << "No current obstacles found within range\n";
   }
   //Large negative number means close object on the left or bottom
   //Large positive number means close object on the right or top
@@ -257,10 +273,11 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
   		vecXSum += distances[i].x;
   		vecYSum += distances[i].y;
   }
+  std::cout << "vecXSum value is: " << vecXSum << "\n" << "vecYSum value is: " << vecYSum << "\n";
   //Construct the message object to publish
   int isObstacle = 0;
-  int motorLeft = 0;
-  int motorRight = 0;
+  float motorLeft = 0;
+  float motorRight = 0;
   if (numThreats > 0) {
   	isObstacle = 1;
   	if (vecXSum != 0) {
@@ -280,16 +297,27 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
   			motorRight = turnSharpness;
   		}
   	}
-  	if (vecYSum != 0) {
-  		if (vecYSum > 0) {
-  			std::cout << "Obstacle is really close to the front of the robot\n" << " Stopping...\n";
-  			motorLeft = 0;
-  			motorRight = 0;
-  		}
-  	}
+    if (motorRight > 100) {
+      motorRight = 100;
+    }
+    if (motorLeft > 100) {
+      motorLeft = 100;
+    }
+  	//Problem here possibly
+  	// if (vecYSum != 0) {
+  	// 	if (vecYSum > 0) {
+  	// 		std::cout << "Obstacle is really close to the front of the robot\n" << "Stopping...\n";
+  	// 		motorLeft = 0;
+  	// 		motorRight = 0;
+  	// 	}
+  	// 	if (vecYSum < 0) {
+  	// 		std::cout << "Obstacle is really close to the back of the robot\n" << "Stopping...\n";
+  	// 	}
+  	// }
   	//Just need to publish the finished message
   }
-	//Adjust the gain and output the right number here   
+	//Adjust the gain and output the right number here
+	std::cout << "Publishing: \n" << "isObstacle: " << isObstacle << "\nmotorLeft: " << motorLeft << "\nmotorRight: " << motorRight << "\n";  
 }
 
 int main(int argc, char** argv)
