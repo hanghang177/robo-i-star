@@ -69,6 +69,7 @@ lidar/CMakeFiles/obstacleAvoidance.dir/src/obstacleAvoidance.cpp.o: /opt/ros/kin
 lidar/CMakeFiles/obstacleAvoidance.dir/src/obstacleAvoidance.cpp.o: /opt/ros/kinetic/include/sensor_msgs/PointCloud2.h
 lidar/CMakeFiles/obstacleAvoidance.dir/src/obstacleAvoidance.cpp.o: /opt/ros/kinetic/include/sensor_msgs/PointField.h
 lidar/CMakeFiles/obstacleAvoidance.dir/src/obstacleAvoidance.cpp.o: /opt/ros/kinetic/include/std_msgs/Header.h
+lidar/CMakeFiles/obstacleAvoidance.dir/src/obstacleAvoidance.cpp.o: /opt/ros/kinetic/include/std_msgs/String.h
 lidar/CMakeFiles/obstacleAvoidance.dir/src/obstacleAvoidance.cpp.o: /opt/ros/kinetic/include/xmlrpcpp/XmlRpcDecl.h
 lidar/CMakeFiles/obstacleAvoidance.dir/src/obstacleAvoidance.cpp.o: /opt/ros/kinetic/include/xmlrpcpp/XmlRpcValue.h
 lidar/CMakeFiles/obstacleAvoidance.dir/src/obstacleAvoidance.cpp.o: /usr/include/eigen3/Eigen/Cholesky

@@ -11,6 +11,9 @@
 #include <pcl/kdtree/kdtree.h>
 #include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/segmentation/extract_clusters.h>
+#include <sstream>
+#include <string> 
+#include <std_msgs/String.h>
 //#include "lidar/avoid.h"
 typedef pcl::PointXY  Point2D;
 typedef pcl::PointXYZ Point3D;
@@ -25,9 +28,16 @@ int frameCount = 0;
 float range_min = 0;
 float range_max = 10;
 //The amout the robot reacts when it finds an obstacle
-float xGain = 20, yGain = 10;
+float xGain = 100, yGain = 10;
 //How sharp of a turn it will be when the robot finds an object
 float turnSharpness = 40;
+float mag (float value) {
+  if (value < 0) {
+      return -value;
+  } else {
+    return value;
+  }
+} 
 class Vector {
 public:
 	float x, y;
@@ -84,7 +94,7 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
     for (int i = 0; i < count; i++)
     {
         float radians = scan->angle_min + scan->angle_increment * i;
-        float range = scan->ranges[i];
+        float range = scan->ranges[i]; 
 
         if ((range > scan->range_max) || (range < scan->range_min)) continue;
         if ((range < range_min) || (range > range_max)) continue;
@@ -247,17 +257,20 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
 
   }
   for (int i = 0; i < walls.size(); i++) {
-  	float distance = abs(walls[i].c) / sqrt(pow(walls[i].a, 2) + pow(walls[i].b, 2));
+  	float distance = mag(walls[i].c) / sqrt(pow(walls[i].a, 2) + pow(walls[i].b, 2));
+    float bottom = sqrt(pow(walls[i].a, 2) + pow(walls[i].b, 2));
+    float top = mag(walls[i].c);
+    std::cout << "Top: " << top << " Bottom: " << bottom << "\n";
   	//Mini algorithm to compute the vector between the origin and a line with given coefficients
   	
   	if (distance <= robotRadius) {
   		float scale = -walls[i].c / (pow(walls[i].a, 2) + pow(walls[i].b, 2));
   		float slope = -walls[i].a / walls[i].b;
   		if (slope > 0) {
-  			Vector vec(-abs(walls[i].a) * scale, abs(walls[i].b) * scale);
+  			Vector vec(-mag(walls[i].a) * scale, mag(walls[i].b) * scale);
   			distances.push_back(vec);
   		} else {
-  			Vector vec(abs(walls[i].a) * scale, abs(walls[i].b) * scale);
+  			Vector vec(mag(walls[i].a) * scale, mag(walls[i].b) * scale);
   			distances.push_back(vec);
   		}
   		numThreats++;
@@ -271,6 +284,7 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
   float vecXSum = 0, vecYSum = 0;
   for (int i = 0; i < distances.size(); i++) {
   		vecXSum += distances[i].x;
+      std::cout << "vecXSum: " << vecXSum << "\n";
   		vecYSum += distances[i].y;
   }
   std::cout << "vecXSum value is: " << vecXSum << "\n" << "vecYSum value is: " << vecYSum << "\n";
@@ -317,7 +331,13 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
   	//Just need to publish the finished message
   }
 	//Adjust the gain and output the right number here
-	std::cout << "Publishing: \n" << "isObstacle: " << isObstacle << "\nmotorLeft: " << motorLeft << "\nmotorRight: " << motorRight << "\n";  
+	std::cout << "Publishing: \n" << "isObstacle: " << isObstacle << "\nmotorLeft: " << motorLeft << "\nmotorRight: " << motorRight << "\n";
+  std_msgs::String string;
+  std::string sisObstacle = boost::to_string(isObstacle);
+  std::string smotorLeft = boost::to_string(motorLeft);
+  std::string smotorRight = boost::to_string(motorRight);
+  string.data = sisObstacle + " " + smotorLeft + " " + smotorRight;
+  pub.publish(string);
 }
 
 int main(int argc, char** argv)
@@ -325,7 +345,7 @@ int main(int argc, char** argv)
     ros::init(argc, argv, "obstacleAvoidance");
     ros::NodeHandle n;
 
-    pub = n.advertise<PointCloud2D>("cloud", 10);
+    pub = n.advertise<std_msgs::String>("avoid", 10);
     ros::Subscriber sub = n.subscribe<sensor_msgs::LaserScan>("/scan", 10, scanCallback);
 
     ros::spin();

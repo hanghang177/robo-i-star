@@ -33,6 +33,12 @@ pcl/segmentation/sac_segmentation.h
 -
 pcl/segmentation/extract_clusters.h
 -
+sstream
+-
+string
+-
+std_msgs/String.h
+-
 
 /opt/ros/kinetic/include/pcl_conversions/pcl_conversions.h
 vector
@@ -893,6 +899,22 @@ ros/message_operations.h
 -
 
 /opt/ros/kinetic/include/std_msgs/Header.h
+string
+-
+vector
+-
+map
+-
+ros/types.h
+-
+ros/serialization.h
+-
+ros/builtin_message_traits.h
+-
+ros/message_operations.h
+-
+
+/opt/ros/kinetic/include/std_msgs/String.h
 string
 -
 vector
