@@ -26,7 +26,7 @@ class Navigator:
                      "Mechanical Engineering Lab"]
         self.audio = ["audio/Grainger.mp3", "audio/Talbot.mp3", "audio/Everitt.mp3", "audio/Engineering Hall.mp3", "audio/Material Science Building.mp3",
                      "audio/Mechanical Engineering Lab.mp3"]
-        self.missionfiles = ["mission/grainger_forward.waypoints","mission/talbot_lab_forward.waypoints","mission/everitt_lab__forward.waypoints","mission/engineering_hall_forward.waypoints",
+        self.missionfiles = ["mission/waypoints.waypoints","mission/talbot_lab_forward.waypoints","mission/everitt_lab__forward.waypoints","mission/engineering_hall_forward.waypoints",
                             "mission/material_science_forward.waypoints","mission/mechanical_lab_forward.waypoints","mission/grainger_backwards.waypoints","mission/talbot_lab_backwards.waypoints",
                             "mission/everitt_lab_backwards.waypoints","mission/engineering_hall_backwards.waypoints","mission/material_science_backwards.waypoints","mission/mechanical_lab_backwards.waypoints"]
 
