@@ -1,24 +1,14 @@
-import dronekit
-import pygame
 import LocationAudio
 import gui
-import time
-import rospy
-from std_msgs import String
+
 targetbuilding = ""
 targetbuildingindex = -1
 returntrip = False
 
-def callback(data):
-    parsedData = data.data.split(" ")
-    print("isObstacle: " + parsedData[0] + "\nmotorLeft: " + parsedData[1] + "\nmotorRight: " + parsedData[2]);
-
 if __name__ == "__main__":
     # Main function
-    rospy.init_node("obstacle_info", anonymous=True)
-
-    rospy.Subscriber("avoid", String, callback)
-    navigator = LocationAudio.Navigator()
+    #roslistener = roslisten.RosListener()
+    navigator = LocationAudio.Navigator(connection_string="", baudrate=57600)
     while True:
         ui = gui.UI()
         # User Interface
@@ -44,17 +34,8 @@ if __name__ == "__main__":
         # while no obstacle detected --> run automated mission control
         navigator.run_mission()
 
-        # if obstacle detected,
-        # navigator.pause_mission()
-        # recheck for obstacle and when its clear,
-        # navigator.continue_mission()
-
-        # implementing a timer in order to add a period to gather around robot when mission is complete
-        time.sleep(10)  # 10 second delay
-
         currentaudio = navigator.getaudio()
         navigator.PlayAudio(currentaudio)  # Plays audio file at current location
-        time.sleep(5)  # 5 second delay after audio plays
 
         # Need to start return mission whose file is located at current mission + 6
         navigator.setLocationindex(targetbuildingindex + 6)
@@ -68,8 +49,5 @@ if __name__ == "__main__":
         # navigator.pause_mission()
         # recheck for obstacle and when its clear,
         # navigator.continue_mission()
-
-        # implementing a timer in order to add a period to gather around robot when mission is complete
-        time.sleep(5)  # 5 second delay
 
         # Restart a new mission by looping back to top, while loop

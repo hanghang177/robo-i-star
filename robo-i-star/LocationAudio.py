@@ -2,20 +2,16 @@ from dronekit import connect,LocationGlobal,VehicleMode, Command, LocationGlobal
 import pygame
 import time
 import math
-
-#connection_string = "COM6"
-connection_string = ""
-baudrate = 57600
+import roslisten
 
 class Navigator:
-    def __init__(self): #Navigator program initialization
-        global connection_string
-        global baudrate
-
+    def __init__(self, connection_string, baudrate): #Navigator program initialization
+        self.isSITL = False
         if not connection_string:
             import dronekit_sitl
             sitl = dronekit_sitl.start_default(lat= 40.111718, lon= -88.227020)
             connection_string = sitl.connection_string()
+            self.isSITL = True
 
         print('Connecting to vehicle on: %s' % connection_string)
         self.vehicle = connect(connection_string, baud=baudrate, wait_ready=False)
@@ -38,13 +34,16 @@ class Navigator:
         while not self.vehicle.armed:
             print(" Waiting for arming...")
             time.sleep(1)
-        self.vehicle.simple_takeoff(10)
-        while True:
-            print(" Altitude: ", self.vehicle.location.global_relative_frame.alt)
-            if self.vehicle.location.global_relative_frame.alt >= 10 * 0.95:  # Trigger just below target alt.
-                print("Reached target altitude")
-                break
-            time.sleep(1)
+        if self.isSITL:
+            self.vehicle.simple_takeoff(10)
+            while True:
+                print(" Altitude: ", self.vehicle.location.global_relative_frame.alt)
+                if self.vehicle.location.global_relative_frame.alt >= 10 * 0.95:  # Trigger just below target alt.
+                    print("Reached target altitude")
+                    break
+                time.sleep(1)
+        else:
+            self.roslistener = roslisten.RosListener()
 
     def PlayAudio(self,audiofile): #this function is used to play audio
         pygame.mixer.init()
@@ -167,6 +166,8 @@ class Navigator:
         lastwaypoint = -1
         while True:
             nextwaypoint = self.vehicle.commands.next
+            if not self.isSITL:
+                self.checkros()
             print('Distance to waypoint (%s): %s' % (nextwaypoint, self.distance_to_current_waypoint()))
             if nextwaypoint != lastwaypoint:
                 print ("At " + str(nextwaypoint))
@@ -181,13 +182,6 @@ class Navigator:
 
     def continue_mission(self):
         self.vehicle.mode = VehicleMode("AUTO")
-        missionsize = self.vehicle.commands.count
-        while True:
-            nextwaypoint = self.vehicle.commands.next
-            if nextwaypoint == missionsize - 1:
-                break
-            time.sleep(1)
-        self.vehicle.mode = VehicleMode("GUIDED")
 
     def setLocationindex(self, locationindex):
         self.locationindex = locationindex
@@ -200,3 +194,22 @@ class Navigator:
 
     def getcurrentmission(self):
         return self.missionfiles[self.locationindex]
+
+    def overwriteChannel(self, channelindex, pwm):
+        print ("CH" + str(channelindex) + " overrides to "+ str(pwm))
+        self.vehicle.channels.overrides[str(channelindex)] = pwm
+        return self.vehicle.channels.overrides
+
+    def clearoverwrites(self):
+        self.vehicle.channels.overrides = {}
+
+    def checkros(self):
+        # if obstacle detected,
+        if (self.roslistener.isObstacle):
+            self.pause_mission()
+            while (self.roslistener.isObstacle):
+                self.overwriteChannel(1, self.roslistener.motorLeft)
+                self.overwriteChannel(3, self.roslistener.motorRight)
+            # recheck for obstacle and when its clear,
+            self.clearoverwrites()
+            self.continue_mission()
