@@ -1,5 +1,6 @@
 import LocationAudio
 import gui
+import roslisten
 
 targetbuilding = ""
 targetbuildingindex = -1
@@ -7,7 +8,7 @@ returntrip = False
 
 if __name__ == "__main__":
     # Main function
-    #roslistener = roslisten.RosListener()
+    roslistener = roslisten.RosListener()
     navigator = LocationAudio.Navigator(connection_string="", baudrate=57600)
     while True:
         ui = gui.UI()
@@ -46,6 +47,13 @@ if __name__ == "__main__":
         navigator.run_mission()
 
         # if obstacle detected,
+        if (roslistener.isObstacle):
+            navigator.pause_mission()
+            while (roslistener.isObstacle):
+                navigator.overwriteChannel(1,roslistener.motorLeft)
+                navigator.overwriteChannel(3,roslistener.motorRight)
+            navigator.clearoverwrites()
+            navigator.continue_mission()
         # navigator.pause_mission()
         # recheck for obstacle and when its clear,
         # navigator.continue_mission()

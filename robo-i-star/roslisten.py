@@ -24,7 +24,7 @@ class RosListener:
         self.isObstacle = int(parsedData[0])
         self.motorLeft = int(parsedData[1])
         self.motorRight = int(parsedData[2])
-        print("isObstacle: " + parsedData[0] + "\nmotorLeft: " + parsedData[1] + "\nmotorRight: " + parsedData[2])
+        rospy.loginfo("isObstacle: " + parsedData[0] + "\nmotorLeft: " + parsedData[1] + "\nmotorRight: " + parsedData[2])
 
     def rosspin(self):
         rospy.spin()
