@@ -2,7 +2,7 @@ from dronekit import connect,LocationGlobal,VehicleMode, Command, LocationGlobal
 import pygame
 import time
 import math
-import roslisten
+import filereader
 
 class Navigator:
     def __init__(self, connection_string, baudrate): #Navigator program initialization
@@ -43,7 +43,7 @@ class Navigator:
                     break
                 time.sleep(1)
         else:
-            self.roslistener = roslisten.RosListener()
+            self.roslistener = filereader.RosFileReader(msgpath="lidarmsg.txt")
 
     def PlayAudio(self,audiofile): #this function is used to play audio
         pygame.mixer.init()

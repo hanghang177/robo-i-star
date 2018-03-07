@@ -1,0 +1,3 @@
+isObstacle: false
+motorLeft: 1200
+motorRight: 1200
