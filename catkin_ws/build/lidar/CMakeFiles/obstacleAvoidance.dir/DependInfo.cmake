@@ -4,20 +4,18 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/joey/catkin_ws/src/lidar/src/obstacleAvoidance.cpp" "/home/joey/catkin_ws/build/lidar/CMakeFiles/obstacleAvoidance.dir/src/obstacleAvoidance.cpp.o"
+  "/home/rrboistar/catkin_ws/src/lidar/src/obstacleAvoidance.cpp" "/home/rrboistar/catkin_ws/build/lidar/CMakeFiles/obstacleAvoidance.dir/src/obstacleAvoidance.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 
 # Preprocessor definitions for this target.
 set(CMAKE_TARGET_DEFINITIONS_CXX
-  "DISABLE_DAVIDSDK"
-  "DISABLE_DSSDK"
-  "DISABLE_ENSENSO"
-  "DISABLE_LIBUSB_1_0"
   "DISABLE_OPENNI2"
   "DISABLE_PCAP"
   "DISABLE_PNG"
-  "DISABLE_RSSDK"
+  "EIGEN_USE_NEW_STDVECTOR"
+  "EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET"
+  "FLANN_STATIC"
   "QT_CORE_LIB"
   "QT_GUI_LIB"
   "QT_NO_DEBUG"
@@ -40,24 +38,23 @@ set(CMAKE_TARGET_DEFINITIONS_CXX
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
   "/usr/include/vtk-6.2"
-  "/usr/include/python2.7"
-  "/usr/include/freetype2"
-  "/usr/include/x86_64-linux-gnu/freetype2"
   "/usr/include/jsoncpp"
-  "/usr/include/x86_64-linux-gnu"
   "/usr/include/hdf5/openmpi"
   "/usr/lib/openmpi/include/openmpi/opal/mca/event/libevent2021/libevent"
   "/usr/lib/openmpi/include/openmpi/opal/mca/event/libevent2021/libevent/include"
   "/usr/lib/openmpi/include"
   "/usr/lib/openmpi/include/openmpi"
   "/usr/include/libxml2"
+  "/usr/include/x86_64-linux-gnu"
+  "/usr/include/freetype2"
+  "/usr/include/x86_64-linux-gnu/freetype2"
+  "/usr/include/python2.7"
   "/usr/include/tcl"
   "/opt/ros/kinetic/include"
   "/opt/ros/kinetic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp"
   "/usr/include/pcl-1.7"
   "/usr/include/eigen3"
   "/usr/include/ni"
-  "/usr/local/include/pcl-1.8"
   "/usr/include/x86_64-linux-gnu/qt5"
   "/usr/include/x86_64-linux-gnu/qt5/QtWidgets"
   "/usr/include/x86_64-linux-gnu/qt5/QtGui"

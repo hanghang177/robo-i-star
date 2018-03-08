@@ -1,2 +1,2 @@
-lidar:navigator_audio_gui:rplidar_ros
--DCATKIN_DEVEL_PREFIX=/home/joey/catkin_ws/devel -DCMAKE_INSTALL_PREFIX=/home/joey/catkin_ws/install -G Unix Makefiles
+beginner_tutorials:lidar:rplidar_ros
+-DCATKIN_DEVEL_PREFIX=/home/rrboistar/catkin_ws/devel -DCMAKE_INSTALL_PREFIX=/home/rrboistar/catkin_ws/install -G Unix Makefiles

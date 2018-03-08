@@ -1,8 +1,0 @@
-prefix=/home/joey/catkin_ws/devel
-
-Name: navigator_audio_gui
-Description: Description of navigator_audio_gui
-Version: 0.0.0
-Cflags: 
-Libs: -L/home/joey/catkin_ws/devel/lib 
-Requires: 

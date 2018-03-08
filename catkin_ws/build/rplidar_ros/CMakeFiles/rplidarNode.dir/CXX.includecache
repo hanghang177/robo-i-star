@@ -6,29 +6,29 @@
 
 #IncludeRegexTransform: 
 
-/home/joey/catkin_ws/src/rplidar_ros/./sdk/include/rplidar.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/./sdk/include/rplidar.h
 rptypes.h
-/home/joey/catkin_ws/src/rplidar_ros/./sdk/include/rptypes.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/./sdk/include/rptypes.h
 rplidar_protocol.h
-/home/joey/catkin_ws/src/rplidar_ros/./sdk/include/rplidar_protocol.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/./sdk/include/rplidar_protocol.h
 rplidar_cmd.h
-/home/joey/catkin_ws/src/rplidar_ros/./sdk/include/rplidar_cmd.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/./sdk/include/rplidar_cmd.h
 rplidar_driver.h
-/home/joey/catkin_ws/src/rplidar_ros/./sdk/include/rplidar_driver.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/./sdk/include/rplidar_driver.h
 
-/home/joey/catkin_ws/src/rplidar_ros/./sdk/include/rplidar_cmd.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/./sdk/include/rplidar_cmd.h
 rplidar_protocol.h
-/home/joey/catkin_ws/src/rplidar_ros/./sdk/include/rplidar_protocol.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/./sdk/include/rplidar_protocol.h
 
-/home/joey/catkin_ws/src/rplidar_ros/./sdk/include/rplidar_driver.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/./sdk/include/rplidar_driver.h
 
-/home/joey/catkin_ws/src/rplidar_ros/./sdk/include/rplidar_protocol.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/./sdk/include/rplidar_protocol.h
 
-/home/joey/catkin_ws/src/rplidar_ros/./sdk/include/rptypes.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/./sdk/include/rptypes.h
 stdint.h
 -
 
-/home/joey/catkin_ws/src/rplidar_ros/./sdk/src/arch/linux/arch_linux.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/./sdk/src/arch/linux/arch_linux.h
 stdio.h
 -
 stdint.h
@@ -70,25 +70,25 @@ sys/select.h
 time.h
 -
 arch/linux/timer.h
-/home/joey/catkin_ws/src/rplidar_ros/./sdk/src/arch/linux/arch/linux/timer.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/./sdk/src/arch/linux/arch/linux/timer.h
 
-/home/joey/catkin_ws/src/rplidar_ros/./sdk/src/arch/linux/net_serial.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/./sdk/src/arch/linux/net_serial.h
 hal/abs_rxtx.h
-/home/joey/catkin_ws/src/rplidar_ros/./sdk/src/arch/linux/hal/abs_rxtx.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/./sdk/src/arch/linux/hal/abs_rxtx.h
 
-/home/joey/catkin_ws/src/rplidar_ros/./sdk/src/arch/linux/thread.hpp
+/home/rrboistar/catkin_ws/src/rplidar_ros/./sdk/src/arch/linux/thread.hpp
 arch/linux/arch_linux.h
-/home/joey/catkin_ws/src/rplidar_ros/./sdk/src/arch/linux/arch/linux/arch_linux.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/./sdk/src/arch/linux/arch/linux/arch_linux.h
 sched.h
 -
 
-/home/joey/catkin_ws/src/rplidar_ros/./sdk/src/arch/linux/timer.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/./sdk/src/arch/linux/timer.h
 rptypes.h
-/home/joey/catkin_ws/src/rplidar_ros/./sdk/src/arch/linux/rptypes.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/./sdk/src/arch/linux/rptypes.h
 unistd.h
 -
 
-/home/joey/catkin_ws/src/rplidar_ros/./sdk/src/arch/macOS/arch_macOS.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/./sdk/src/arch/macOS/arch_macOS.h
 stdio.h
 -
 stdint.h
@@ -128,19 +128,19 @@ sys/ioctl.h
 time.h
 -
 arch/macOS/timer.h
-/home/joey/catkin_ws/src/rplidar_ros/./sdk/src/arch/macOS/arch/macOS/timer.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/./sdk/src/arch/macOS/arch/macOS/timer.h
 
-/home/joey/catkin_ws/src/rplidar_ros/./sdk/src/arch/macOS/thread.hpp
+/home/rrboistar/catkin_ws/src/rplidar_ros/./sdk/src/arch/macOS/thread.hpp
 arch/macOS/arch_macOS.h
-/home/joey/catkin_ws/src/rplidar_ros/./sdk/src/arch/macOS/arch/macOS/arch_macOS.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/./sdk/src/arch/macOS/arch/macOS/arch_macOS.h
 
-/home/joey/catkin_ws/src/rplidar_ros/./sdk/src/arch/macOS/timer.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/./sdk/src/arch/macOS/timer.h
 rptypes.h
-/home/joey/catkin_ws/src/rplidar_ros/./sdk/src/arch/macOS/rptypes.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/./sdk/src/arch/macOS/rptypes.h
 unistd.h
 -
 
-/home/joey/catkin_ws/src/rplidar_ros/./sdk/src/arch/win32/arch_win32.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/./sdk/src/arch/win32/arch_win32.h
 stddef.h
 -
 stdio.h
@@ -154,41 +154,41 @@ process.h
 direct.h
 -
 timer.h
-/home/joey/catkin_ws/src/rplidar_ros/./sdk/src/arch/win32/timer.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/./sdk/src/arch/win32/timer.h
 
-/home/joey/catkin_ws/src/rplidar_ros/./sdk/src/arch/win32/timer.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/./sdk/src/arch/win32/timer.h
 rptypes.h
-/home/joey/catkin_ws/src/rplidar_ros/./sdk/src/arch/win32/rptypes.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/./sdk/src/arch/win32/rptypes.h
 
-/home/joey/catkin_ws/src/rplidar_ros/./sdk/src/arch/win32/winthread.hpp
+/home/rrboistar/catkin_ws/src/rplidar_ros/./sdk/src/arch/win32/winthread.hpp
 sdkcommon.h
-/home/joey/catkin_ws/src/rplidar_ros/./sdk/src/arch/win32/sdkcommon.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/./sdk/src/arch/win32/sdkcommon.h
 process.h
 -
 
-/home/joey/catkin_ws/src/rplidar_ros/./sdk/src/hal/abs_rxtx.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/./sdk/src/hal/abs_rxtx.h
 rptypes.h
-/home/joey/catkin_ws/src/rplidar_ros/./sdk/src/hal/rptypes.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/./sdk/src/hal/rptypes.h
 
-/home/joey/catkin_ws/src/rplidar_ros/./sdk/src/hal/thread.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/./sdk/src/hal/thread.h
 rptypes.h
-/home/joey/catkin_ws/src/rplidar_ros/./sdk/src/hal/rptypes.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/./sdk/src/hal/rptypes.h
 
-/home/joey/catkin_ws/src/rplidar_ros/./sdk/src/hal/util.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/./sdk/src/hal/util.h
 
-/home/joey/catkin_ws/src/rplidar_ros/./sdk/src/sdkcommon.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/./sdk/src/sdkcommon.h
 arch/win32/arch_win32.h
-/home/joey/catkin_ws/src/rplidar_ros/./sdk/src/arch/win32/arch_win32.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/./sdk/src/arch/win32/arch_win32.h
 arch/macOS/arch_macOS.h
-/home/joey/catkin_ws/src/rplidar_ros/./sdk/src/arch/macOS/arch_macOS.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/./sdk/src/arch/macOS/arch_macOS.h
 arch/linux/arch_linux.h
-/home/joey/catkin_ws/src/rplidar_ros/./sdk/src/arch/linux/arch_linux.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/./sdk/src/arch/linux/arch_linux.h
 rplidar.h
-/home/joey/catkin_ws/src/rplidar_ros/./sdk/src/rplidar.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/./sdk/src/rplidar.h
 hal/util.h
-/home/joey/catkin_ws/src/rplidar_ros/./sdk/src/hal/util.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/./sdk/src/hal/util.h
 
-/home/joey/catkin_ws/src/rplidar_ros/sdk/src/arch/linux/arch_linux.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/sdk/src/arch/linux/arch_linux.h
 stdio.h
 -
 stdint.h
@@ -230,23 +230,23 @@ sys/select.h
 time.h
 -
 arch/linux/timer.h
-/home/joey/catkin_ws/src/rplidar_ros/sdk/src/arch/linux/arch/linux/timer.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/sdk/src/arch/linux/arch/linux/timer.h
 
-/home/joey/catkin_ws/src/rplidar_ros/sdk/src/arch/linux/net_serial.cpp
+/home/rrboistar/catkin_ws/src/rplidar_ros/sdk/src/arch/linux/net_serial.cpp
 arch/linux/arch_linux.h
-/home/joey/catkin_ws/src/rplidar_ros/sdk/src/arch/linux/arch/linux/arch_linux.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/sdk/src/arch/linux/arch/linux/arch_linux.h
 arch/linux/net_serial.h
-/home/joey/catkin_ws/src/rplidar_ros/sdk/src/arch/linux/arch/linux/net_serial.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/sdk/src/arch/linux/arch/linux/net_serial.h
 termios.h
 -
 sys/select.h
 -
 
-/home/joey/catkin_ws/src/rplidar_ros/sdk/src/arch/linux/timer.cpp
+/home/rrboistar/catkin_ws/src/rplidar_ros/sdk/src/arch/linux/timer.cpp
 arch/linux/arch_linux.h
-/home/joey/catkin_ws/src/rplidar_ros/sdk/src/arch/linux/arch/linux/arch_linux.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/sdk/src/arch/linux/arch/linux/arch_linux.h
 
-/home/joey/catkin_ws/src/rplidar_ros/sdk/src/arch/macOS/arch_macOS.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/sdk/src/arch/macOS/arch_macOS.h
 stdio.h
 -
 stdint.h
@@ -286,9 +286,9 @@ sys/ioctl.h
 time.h
 -
 arch/macOS/timer.h
-/home/joey/catkin_ws/src/rplidar_ros/sdk/src/arch/macOS/arch/macOS/timer.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/sdk/src/arch/macOS/arch/macOS/timer.h
 
-/home/joey/catkin_ws/src/rplidar_ros/sdk/src/arch/win32/arch_win32.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/sdk/src/arch/win32/arch_win32.h
 stddef.h
 -
 stdio.h
@@ -302,75 +302,75 @@ process.h
 direct.h
 -
 timer.h
-/home/joey/catkin_ws/src/rplidar_ros/sdk/src/arch/win32/timer.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/sdk/src/arch/win32/timer.h
 
-/home/joey/catkin_ws/src/rplidar_ros/sdk/src/arch/win32/timer.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/sdk/src/arch/win32/timer.h
 rptypes.h
-/home/joey/catkin_ws/src/rplidar_ros/sdk/src/arch/win32/rptypes.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/sdk/src/arch/win32/rptypes.h
 
-/home/joey/catkin_ws/src/rplidar_ros/sdk/src/hal/abs_rxtx.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/sdk/src/hal/abs_rxtx.h
 rptypes.h
-/home/joey/catkin_ws/src/rplidar_ros/sdk/src/hal/rptypes.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/sdk/src/hal/rptypes.h
 
-/home/joey/catkin_ws/src/rplidar_ros/sdk/src/hal/event.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/sdk/src/hal/event.h
 
-/home/joey/catkin_ws/src/rplidar_ros/sdk/src/hal/locker.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/sdk/src/hal/locker.h
 
-/home/joey/catkin_ws/src/rplidar_ros/sdk/src/hal/thread.cpp
+/home/rrboistar/catkin_ws/src/rplidar_ros/sdk/src/hal/thread.cpp
 sdkcommon.h
-/home/joey/catkin_ws/src/rplidar_ros/sdk/src/hal/sdkcommon.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/sdk/src/hal/sdkcommon.h
 hal/thread.h
-/home/joey/catkin_ws/src/rplidar_ros/sdk/src/hal/hal/thread.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/sdk/src/hal/hal/thread.h
 arch/win32/winthread.hpp
-/home/joey/catkin_ws/src/rplidar_ros/sdk/src/hal/arch/win32/winthread.hpp
+/home/rrboistar/catkin_ws/src/rplidar_ros/sdk/src/hal/arch/win32/winthread.hpp
 arch/macOS/thread.hpp
-/home/joey/catkin_ws/src/rplidar_ros/sdk/src/hal/arch/macOS/thread.hpp
+/home/rrboistar/catkin_ws/src/rplidar_ros/sdk/src/hal/arch/macOS/thread.hpp
 arch/linux/thread.hpp
-/home/joey/catkin_ws/src/rplidar_ros/sdk/src/hal/arch/linux/thread.hpp
+/home/rrboistar/catkin_ws/src/rplidar_ros/sdk/src/hal/arch/linux/thread.hpp
 
-/home/joey/catkin_ws/src/rplidar_ros/sdk/src/hal/thread.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/sdk/src/hal/thread.h
 rptypes.h
-/home/joey/catkin_ws/src/rplidar_ros/sdk/src/hal/rptypes.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/sdk/src/hal/rptypes.h
 
-/home/joey/catkin_ws/src/rplidar_ros/sdk/src/hal/util.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/sdk/src/hal/util.h
 
-/home/joey/catkin_ws/src/rplidar_ros/sdk/src/rplidar_driver.cpp
+/home/rrboistar/catkin_ws/src/rplidar_ros/sdk/src/rplidar_driver.cpp
 sdkcommon.h
-/home/joey/catkin_ws/src/rplidar_ros/sdk/src/sdkcommon.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/sdk/src/sdkcommon.h
 hal/abs_rxtx.h
-/home/joey/catkin_ws/src/rplidar_ros/sdk/src/hal/abs_rxtx.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/sdk/src/hal/abs_rxtx.h
 hal/thread.h
-/home/joey/catkin_ws/src/rplidar_ros/sdk/src/hal/thread.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/sdk/src/hal/thread.h
 hal/locker.h
-/home/joey/catkin_ws/src/rplidar_ros/sdk/src/hal/locker.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/sdk/src/hal/locker.h
 hal/event.h
-/home/joey/catkin_ws/src/rplidar_ros/sdk/src/hal/event.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/sdk/src/hal/event.h
 rplidar_driver_serial.h
-/home/joey/catkin_ws/src/rplidar_ros/sdk/src/rplidar_driver_serial.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/sdk/src/rplidar_driver_serial.h
 
-/home/joey/catkin_ws/src/rplidar_ros/sdk/src/rplidar_driver_serial.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/sdk/src/rplidar_driver_serial.h
 
-/home/joey/catkin_ws/src/rplidar_ros/sdk/src/sdkcommon.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/sdk/src/sdkcommon.h
 arch/win32/arch_win32.h
-/home/joey/catkin_ws/src/rplidar_ros/sdk/src/arch/win32/arch_win32.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/sdk/src/arch/win32/arch_win32.h
 arch/macOS/arch_macOS.h
-/home/joey/catkin_ws/src/rplidar_ros/sdk/src/arch/macOS/arch_macOS.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/sdk/src/arch/macOS/arch_macOS.h
 arch/linux/arch_linux.h
-/home/joey/catkin_ws/src/rplidar_ros/sdk/src/arch/linux/arch_linux.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/sdk/src/arch/linux/arch_linux.h
 rplidar.h
-/home/joey/catkin_ws/src/rplidar_ros/sdk/src/rplidar.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/sdk/src/rplidar.h
 hal/util.h
-/home/joey/catkin_ws/src/rplidar_ros/sdk/src/hal/util.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/sdk/src/hal/util.h
 
-/home/joey/catkin_ws/src/rplidar_ros/src/node.cpp
+/home/rrboistar/catkin_ws/src/rplidar_ros/src/node.cpp
 ros/ros.h
-/home/joey/catkin_ws/src/rplidar_ros/src/ros/ros.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/src/ros/ros.h
 sensor_msgs/LaserScan.h
-/home/joey/catkin_ws/src/rplidar_ros/src/sensor_msgs/LaserScan.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/src/sensor_msgs/LaserScan.h
 std_srvs/Empty.h
-/home/joey/catkin_ws/src/rplidar_ros/src/std_srvs/Empty.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/src/std_srvs/Empty.h
 rplidar.h
-/home/joey/catkin_ws/src/rplidar_ros/src/rplidar.h
+/home/rrboistar/catkin_ws/src/rplidar_ros/src/rplidar.h
 
 /opt/ros/kinetic/include/ros/advertise_options.h
 ros/forwards.h

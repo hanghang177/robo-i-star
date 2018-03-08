@@ -332,12 +332,21 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
   }
 	//Adjust the gain and output the right number here
 	std::cout << "Publishing: \n" << "isObstacle: " << isObstacle << "\nmotorLeft: " << motorLeft << "\nmotorRight: " << motorRight << "\n";
-  std_msgs::String string;
-  std::string sisObstacle = boost::to_string(isObstacle);
-  std::string smotorLeft = boost::to_string(motorLeft);
-  std::string smotorRight = boost::to_string(motorRight);
-  string.data = sisObstacle + " " + smotorLeft + " " + smotorRight;
-  pub.publish(string);
+  std_msgs::String msg;
+
+  std::stringstream ss;
+
+  ss << isObstacle << " " << motorLeft << " " << motorRight;
+
+  msg.data = ss.str();
+
+  std::cout << ss.str() << "\n";
+
+//  std::string sisObstacle = boost::to_string(isObstacle);
+//  std::string smotorLeft = boost::to_string(motorLeft);
+//  std::string smotorRight = boost::to_string(motorRight);
+//  msg.data = sisObstacle + " " + smotorLeft + " " + smotorRight;
+  pub.publish(msg);
 }
 
 int main(int argc, char** argv)
@@ -345,7 +354,7 @@ int main(int argc, char** argv)
     ros::init(argc, argv, "obstacleAvoidance");
     ros::NodeHandle n;
 
-    pub = n.advertise<std_msgs::String>("avoid", 10);
+    pub = n.advertise<std_msgs::String>("avoid", 1000);
     ros::Subscriber sub = n.subscribe<sensor_msgs::LaserScan>("/scan", 10, scanCallback);
 
     ros::spin();

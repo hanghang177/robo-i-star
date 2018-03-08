@@ -1,8 +1,0 @@
-prefix=/home/joey/catkin_ws/install
-
-Name: msgs
-Description: Description of msgs
-Version: 0.0.0
-Cflags: 
-Libs: -L/home/joey/catkin_ws/install/lib 
-Requires: 
