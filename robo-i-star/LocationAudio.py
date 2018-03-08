@@ -2,7 +2,7 @@ from dronekit import connect,LocationGlobal,VehicleMode, Command, LocationGlobal
 import pygame
 import time
 import math
-import filereader
+#import filereader
 
 class Navigator:
     def __init__(self, connection_string, baudrate): #Navigator program initialization
@@ -42,8 +42,8 @@ class Navigator:
                     print("Reached target altitude")
                     break
                 time.sleep(1)
-        else:
-            self.roslistener = filereader.RosFileReader(msgpath="lidarmsg.txt")
+        #else:
+            #self.roslistener = filereader.RosFileReader(msgpath="lidarmsg.txt")
 
     def PlayAudio(self,audiofile): #this function is used to play audio
         pygame.mixer.init()
@@ -205,11 +205,12 @@ class Navigator:
 
     def checkros(self):
         # if obstacle detected,
-        if (self.roslistener.isObstacle):
-            self.pause_mission()
-            while (self.roslistener.isObstacle):
-                self.overwriteChannel(1, self.roslistener.motorLeft)
-                self.overwriteChannel(3, self.roslistener.motorRight)
-            # recheck for obstacle and when its clear,
-            self.clearoverwrites()
-            self.continue_mission()
+        # if (self.roslistener.isObstacle):
+        #     self.pause_mission()
+        #     while (self.roslistener.isObstacle):
+        #         self.overwriteChannel(1, self.roslistener.motorLeft)
+        #         self.overwriteChannel(3, self.roslistener.motorRight)
+        #     # recheck for obstacle and when its clear,
+        #     self.clearoverwrites()
+        pass
+        #     self.continue_mission()
