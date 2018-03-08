@@ -15,15 +15,15 @@ returntrip = False
 
 def callback(data):
     rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
+    print(data.data)
 
 def listener():
+    print("fish")
     rospy.init_node('listener', anonymous=True)
     rospy.Subscriber("avoid", String, callback)
     rospy.spin()
 
-if __name__ == "__main__":
-    # Main function
-    Thread(target=listener).start()
+def mainfunction():
     navigator = LocationAudio.Navigator(connection_string="", baudrate=115200)
     while True:
         ui = gui.UI()
@@ -67,3 +67,9 @@ if __name__ == "__main__":
         # navigator.continue_mission()
 
         # Restart a new mission by looping back to top, while loop
+
+if __name__ == "__main__":
+    # Main function
+    Thread(target = mainfunction).start()
+    listener()
+    

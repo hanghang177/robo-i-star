@@ -22,12 +22,15 @@ class RosFileReader():
             Thread(target = self.reading).start()
 
     def reading(self):
+        self.fp = open(self.msgpath, 'r', os.O_NONBLOCK)
         line = self.fp.readline()
         self.isObstacle = str2bool(line.split(':')[1].strip())
         line = self.fp.readline()
         self.motorLeft = int(line.split(':')[1].strip())
         line = self.fp.readline()
         self.motorRight = int(line.split(':')[1].strip())
+        self.fp.close()
+        time.sleep(0.5)
 
 if __name__ == "__main__":
     rosfilereader = RosFileReader(filepath)
