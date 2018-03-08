@@ -14,14 +14,43 @@ targetbuildingindex = -1
 returntrip = False
 
 def callback(data):
-    rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
-    print(data.data)
+    # rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
+    parsedData = data.data.split(" ")
+    isObstacle = int(parsedData[0])
+    motorLeft = int(parsedData[1])
+    motorRight = int(parsedData[2])
+    print (motorLeft)
 
 def listener():
-    print("fish")
     rospy.init_node('listener', anonymous=True)
     rospy.Subscriber("avoid", String, callback)
     rospy.spin()
+
+def run_mission(self):
+    navigator.vehicle.commands._vehicle._current_waypoint = 2
+    navigator.vehicle.commands.next = 2
+    navigator.vehicle.mode = VehicleMode("AUTO")
+    missionsize = navigator.vehicle.commands.count
+    print ("missionsize: " + str(missionsize))
+    lastwaypoint = -1
+    while True:
+        nextwaypoint = navigator.vehicle.commands.next
+        # print('Distance to waypoint (%s): %s' % (nextwaypoint, navigator.distance_to_current_waypoint()))
+        if nextwaypoint != lastwaypoint:
+            print ("At " + str(nextwaypoint))
+            lastwaypoint = nextwaypoint
+        if nextwaypoint == missionsize:
+            break
+        if isObstacle:
+            navigator.pause_mission()
+            print("obstacle detected")
+            while isObstacle:
+                navigator.overwriteChannel(1, motorLeft)
+                navigator.overwriteChannel(3, motorRight)
+            print("obstacle clear")
+            navigator.clearoverwrites()
+            navigator.continue_mission()
+    navigator.vehicle.mode = VehicleMode("GUIDED")
 
 def mainfunction():
     navigator = LocationAudio.Navigator(connection_string="", baudrate=115200)
@@ -48,7 +77,7 @@ def mainfunction():
         # Need to integrate mission control with obstacle avoidance
 
         # while no obstacle detected --> run automated mission control
-        navigator.run_mission()
+        run_mission()
 
         currentaudio = navigator.getaudio()
         navigator.PlayAudio(currentaudio)  # Plays audio file at current location
@@ -59,7 +88,7 @@ def mainfunction():
 
         # while no obstacle detected --> run automated mission control
         navigator.upload_mission(currentmission)
-        navigator.run_mission()
+        run_mission()
 
         # if obstacle detected,
         # navigator.pause_mission()
@@ -72,4 +101,3 @@ if __name__ == "__main__":
     # Main function
     Thread(target = mainfunction).start()
     listener()
-    
