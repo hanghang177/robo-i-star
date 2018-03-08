@@ -34,4 +34,5 @@ class UI(tk.Tk):
             if (x >= xmin) and (x <= xmax) and (y >= ymin) and (y <= ymax):
                 self.location.set(coordnames[a])
                 self.locationindex.set(a)
+                print(coordnames[a])
                 self.destroy()
