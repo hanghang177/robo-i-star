@@ -12,7 +12,7 @@
 #include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/segmentation/extract_clusters.h>
 #include <sstream>
-#include <string> 
+#include <string>
 #include <std_msgs/String.h>
 //#include "lidar/avoid.h"
 typedef pcl::PointXY  Point2D;
@@ -37,7 +37,7 @@ float mag (float value) {
   } else {
     return value;
   }
-} 
+}
 class Vector {
 public:
 	float x, y;
@@ -94,7 +94,7 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
     for (int i = 0; i < count; i++)
     {
         float radians = scan->angle_min + scan->angle_increment * i;
-        float range = scan->ranges[i]; 
+        float range = scan->ranges[i];
 
         if ((range > scan->range_max) || (range < scan->range_min)) continue;
         if ((range < range_min) || (range > range_max)) continue;
@@ -171,7 +171,7 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
     	Line line (coefficients, cloud_plane);
     	walls.push_back(line);
     	//std::cout << "PointCloud representing the planar component: " << cloud_plane->points.size () << " data points\n";
-    	std::cout << "Coefficients are:\n a = " << coefficients->values[0] << ", b = " << coefficients->values[1] << ", c = " << coefficients->values[3] << "\n";  
+    	std::cout << "Coefficients are:\n a = " << coefficients->values[0] << ", b = " << coefficients->values[1] << ", c = " << coefficients->values[3] << "\n";
     	//Remove the planar inliers, extract the rest.
     	 extract.setNegative (true);
     	 extract.filter (*cloud_f);
@@ -179,13 +179,13 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
      }
      std::cout << "There were a total of " << walls.size() << " walls\n";
     //std::cout << "The number of coefficients is: " << coefficients_group.size() << "\n";
-    
- //    float model_ss_ (0.04f); 
-	// float scene_ss_ (0.04f); 
-	// float rf_rad_ (0.2f); 
-	// float descr_rad_ (1.8f); 
-	// float cg_size_ (0.4f); 
-	// float cg_thresh_ (-0.5f); 
+
+ //    float model_ss_ (0.04f);
+	// float scene_ss_ (0.04f);
+	// float rf_rad_ (0.2f);
+	// float descr_rad_ (1.8f);
+	// float cg_size_ (0.4f);
+	// float cg_thresh_ (-0.5f);
     //Creating the Kd tree for search method of extraction
     pcl::search::KdTree<Point3D>::Ptr tree (new pcl::search::KdTree<Point3D>);
     tree->setInputCloud (cloud_plane);
@@ -201,7 +201,7 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
     std::cout << "Cluster indices size: " << cluster_indices.size() << "\n";
     cloud3D->header.stamp = ros::Time::now().toNSec();
     std::vector < pcl::PointCloud<pcl::PointXYZ>::Ptr, Eigen::aligned_allocator <pcl::PointCloud <pcl::PointXYZ>::Ptr > > clusters;
-    //PointCloud2D::Ptr cloud(new PointCloud2D); 
+    //PointCloud2D::Ptr cloud(new PointCloud2D);
     //PointCloud3Dto2D(*cloud3D_filtered, *cloud);
     std::vector<pcl::PointIndices>::const_iterator it;
 	std::vector<int>::const_iterator pit;
@@ -217,7 +217,7 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
         		xSum += cloud3D_filtered->points[*pit].x;
         		ySum += cloud3D_filtered->points[*pit].y;
         		cluster->points.push_back(cloud3D_filtered->points[*pit]);
-                //cloud_cluster->points.push_back(cloud3D_filtered->points[*pit]); 
+                //cloud_cluster->points.push_back(cloud3D_filtered->points[*pit]);
          		//std::cout << "(" << cloud_cluster->points[*pit].x << ", " << cloud_cluster->points[*pit].y << ")\n";
         }
         Circle obj;
@@ -262,7 +262,7 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
     float top = mag(walls[i].c);
     std::cout << "Top: " << top << " Bottom: " << bottom << "\n";
   	//Mini algorithm to compute the vector between the origin and a line with given coefficients
-  	
+
   	if (distance <= robotRadius) {
   		float scale = -walls[i].c / (pow(walls[i].a, 2) + pow(walls[i].b, 2));
   		float slope = -walls[i].a / walls[i].b;
@@ -317,6 +317,10 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
     if (motorLeft > 100) {
       motorLeft = 100;
     }
+
+    motorRight = motorRight*5 + 1500;
+    motorLeft = motorLeft*5 + 1500;
+
   	//Problem here possibly
   	// if (vecYSum != 0) {
   	// 	if (vecYSum > 0) {
