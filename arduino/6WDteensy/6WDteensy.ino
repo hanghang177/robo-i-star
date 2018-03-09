@@ -103,12 +103,19 @@ void setup() {
   interruptinit();
   leftmotor.attach(leftmotorpin);
   rightmotor.attach(rightmotorpin);
+  pinMode(13, OUTPUT);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
   rcInputUpdate();
   rx();
+  if(isObstacle)
+  {
+    digitalWrite(13, HIGH);
+  }else{
+    digitalWrite(13, LOW);
+  }
   if(manualswitch())
   {
     int CH2speed = CH2reading - 1500;
