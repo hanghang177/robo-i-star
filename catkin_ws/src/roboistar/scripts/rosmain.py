@@ -10,10 +10,12 @@ import serial
 isObstacle = 0
 motorLeft = 1500
 motorRight = 1500
+rosdata = ""
 
 targetbuilding = ""
 targetbuildingindex = -1
 returntrip = False
+inmission = False
 
 navigator = 0
 
@@ -21,7 +23,7 @@ s = 0
 
 last_received = ''
 
-COMport = '/dev/ttyUSB1'
+COMport = '/dev/ttyACM0'
 
 def receiving(serial_port):
     global last_received
@@ -45,7 +47,8 @@ class SerialData(object):
             # no serial connection
             self.serial_port = None
         else:
-            Thread(target=receiving, args=(self.serial_port,)).start()
+            pass
+            #Thread(target=receiving, args=(self.serial_port,)).start()
 
     def send(self, data):
         self.serial_port.write(data + ",")
@@ -54,17 +57,18 @@ class SerialData(object):
         if self.serial_port is not None:
             self.serial_port.close()
 
+
 def callback(data):
     global isObstacle
     global motorLeft
     global motorRight
-    global s
+    global rosdata
     # rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
+    rosdata  = data.data
     parsedData = data.data.split(" ")
     isObstacle = int(parsedData[0])
     motorLeft = int(parsedData[1])
     motorRight = int(parsedData[2])
-    s.send(data.data)
 
 def listener():
     rospy.init_node('listener', anonymous=True)
@@ -101,12 +105,24 @@ def run_mission():
             navigator.continue_mission()
     navigator.vehicle.mode = VehicleMode("GUIDED")
 
+def serialhandler():
+    global s
+    global isObstacle
+    global inmission
+    s = SerialData()
+    while True:
+        if inmission:
+            s.send(rosdata)
+            if(isObstacle):
+                print(rosdata)
+
 def mainfunction():
     global navigator
     global isObstacle
     global motorLeft
     global motorRight
-    navigator = LocationAudio.Navigator(connection_string="/dev/ttyACM0", baudrate=115200)
+    global inmission
+    navigator = LocationAudio.Navigator(connection_string="/dev/ttyACM1", baudrate=115200)
     while True:
         ui = gui.UI()
         # User Interface
@@ -130,8 +146,9 @@ def mainfunction():
         # Need to integrate mission control with obstacle avoidance
 
         # while no obstacle detected --> run automated mission control
+        inmission = True
         navigator.run_mission()
-
+        inmission = False
         currentaudio = navigator.getaudio()
         navigator.PlayAudio(currentaudio)  # Plays audio file at current location
 
@@ -141,8 +158,9 @@ def mainfunction():
 
         # while no obstacle detected --> run automated mission control
         navigator.upload_mission(currentmission)
+        inmission = True
         navigator.run_mission()
-
+        inmission = False
         # if obstacle detected,
         # navigator.pause_mission()
         # recheck for obstacle and when its clear,
@@ -153,5 +171,5 @@ def mainfunction():
 if __name__ == "__main__":
     # Main function
     Thread(target = mainfunction).start()
-    s = SerialData()
+    Thread(target = serialhandler).start()
     listener()
