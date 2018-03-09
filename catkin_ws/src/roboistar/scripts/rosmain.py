@@ -5,6 +5,7 @@ import rospy
 from std_msgs.msg import String
 from threading import Thread
 from dronekit import connect,LocationGlobal,VehicleMode, Command, LocationGlobalRelative
+import serial
 
 isObstacle = 0
 motorLeft = 1500
@@ -16,15 +17,54 @@ returntrip = False
 
 navigator = 0
 
+s = 0
+
+last_received = ''
+
+COMport = '/dev/ttyUSB1'
+
+def receiving(serial_port):
+    global last_received
+    buffer = ''
+    while True:
+        buffer += serial_port.read_all()
+        if '\n' in buffer:
+            lines = buffer.split('\n')  # Guaranteed to have at least 2 entries
+            last_received = lines[-2]
+            # If the Arduino sends lots of empty lines, you'll lose the last
+            # filled line, so you could make the above statement conditional
+            # like so: if lines[-2]: last_received = lines[-2]
+            buffer = lines[-1]
+            print last_received
+
+class SerialData(object):
+    def __init__(self):
+        try:
+            self.serial_port = serial.Serial(COMport,115200)
+        except serial.serialutil.SerialException:
+            # no serial connection
+            self.serial_port = None
+        else:
+            Thread(target=receiving, args=(self.serial_port,)).start()
+
+    def send(self, data):
+        self.serial_port.write(data + ",")
+
+    def __del__(self):
+        if self.serial_port is not None:
+            self.serial_port.close()
+
 def callback(data):
     global isObstacle
     global motorLeft
     global motorRight
+    global s
     # rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
     parsedData = data.data.split(" ")
     isObstacle = int(parsedData[0])
     motorLeft = int(parsedData[1])
     motorRight = int(parsedData[2])
+    s.send(data.data)
 
 def listener():
     rospy.init_node('listener', anonymous=True)
@@ -90,7 +130,7 @@ def mainfunction():
         # Need to integrate mission control with obstacle avoidance
 
         # while no obstacle detected --> run automated mission control
-        run_mission()
+        navigator.run_mission()
 
         currentaudio = navigator.getaudio()
         navigator.PlayAudio(currentaudio)  # Plays audio file at current location
@@ -101,7 +141,7 @@ def mainfunction():
 
         # while no obstacle detected --> run automated mission control
         navigator.upload_mission(currentmission)
-        run_mission()
+        navigator.run_mission()
 
         # if obstacle detected,
         # navigator.pause_mission()
@@ -113,4 +153,5 @@ def mainfunction():
 if __name__ == "__main__":
     # Main function
     Thread(target = mainfunction).start()
+    s = SerialData()
     listener()
