@@ -14,7 +14,7 @@ pixcoords = [[242, 115, 458, 179], [18, 220, 160, 341], [16, 463, 162, 567], [25
 class UI(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self)
-        mapimage = ImageTk.PhotoImage(Image.open("tests/map.jpg"))
+        mapimage = ImageTk.PhotoImage(Image.open("tests/map_double.jpg"))
         self.title("ROBO-I-STAR")
         self.location = tk.StringVar()
         self.locationindex = tk.IntVar()
@@ -31,7 +31,7 @@ class UI(tk.Tk):
         for a in range(len(pixcoords)):
             pixcoord = pixcoords[a]
             xmin, ymin, xmax, ymax = pixcoord
-            if (x >= xmin) and (x <= xmax) and (y >= ymin) and (y <= ymax):
+            if (x >= xmin*2) and (x <= xmax*2) and (y >= ymin*2) and (y <= ymax*2):
                 self.location.set(coordnames[a])
                 self.locationindex.set(a)
                 print(coordnames[a])
