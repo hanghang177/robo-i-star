@@ -66,7 +66,7 @@ def mainfunction():
     global isObstacle
     global motorLeft
     global motorRight
-    navigator = LocationAudio.Navigator(connection_string="", baudrate=115200)
+    navigator = LocationAudio.Navigator(connection_string="/dev/ttyACM0", baudrate=115200)
     while True:
         ui = gui.UI()
         # User Interface

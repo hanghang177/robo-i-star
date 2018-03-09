@@ -26,9 +26,9 @@ class Navigator:
                             "/home/rrboistar/catkin_ws/src/roboistar/scripts/mission/material_science_forward.waypoints","/home/rrboistar/catkin_ws/src/roboistar/scripts/mission/mechanical_lab_forward.waypoints","/home/rrboistar/catkin_ws/src/roboistar/scripts/mission/grainger_backwards.waypoints","/home/rrboistar/catkin_ws/src/roboistar/scripts/mission/talbot_lab_backwards.waypoints",
                             "/home/rrboistar/catkin_ws/src/roboistar/scripts/mission/everitt_lab_backwards.waypoints","/home/rrboistar/catkin_ws/src/roboistar/scripts/mission/engineering_hall_backwards.waypoints","/home/rrboistar/catkin_ws/src/roboistar/scripts/mission/material_science_backwards.waypoints","/home/rrboistar/catkin_ws/src/roboistar/scripts/mission/mechanical_lab_backwards.waypoints"]
 
-        while not self.vehicle.is_armable:
-            print(" Waiting for vehicle to initialise...")
-            time.sleep(1)
+        # while not self.vehicle.is_armable:
+        #     print(" Waiting for vehicle to initialise...")
+        #     time.sleep(1)
         self.vehicle.mode = VehicleMode("GUIDED")
         self.vehicle.armed = True
         while not self.vehicle.armed:
