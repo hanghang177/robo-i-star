@@ -7,10 +7,18 @@
 #define rightmotorpin 4
 #define rcppm 5
 
+#define frontIR A0
+#define leftIR A1
+#define rightIR A2
+
+#define IRthreshold 400
+
 PulsePositionInput rcInput;
 
 Servo leftmotor;
 Servo rightmotor;
+
+const bool uselidar = true;
 
 int CH1reading = 1500;
 int CH2reading = 1500;
@@ -30,6 +38,10 @@ String last_received = "";
 int isObstacle = false;
 int lidarleft = 1500;
 int lidarright = 1500;
+
+int irfront = 250;
+int irleft = 250;
+int irright = 250;
 
 void rcInputUpdate() {
   CH1reading = rcInput.read(1);
@@ -96,6 +108,24 @@ void rx(){
   }
 }
 
+void ircheck()
+{
+  irfront = analogRead(frontIR);
+  irleft = analogRead(leftIR);
+  irright = analogRead(rightIR);
+  if(irfront > IRthreshold){
+    leftmotor.writeMicroseconds(1000);
+    rightmotor.writeMicroseconds(2000);
+    delay(500);
+  }else if(irleft > IRthreshold){
+    leftmotor.writeMicroseconds(2000);
+    rightmotor.writeMicroseconds(1400);
+  }else if(irright > IRthreshold){
+    leftmotor.writeMicroseconds(1400);
+    rightmotor.writeMicroseconds(2000);
+  }
+}
+
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
@@ -137,12 +167,21 @@ void loop() {
     }
     rightmotor.writeMicroseconds(rightspeed);
   }else{
-    if(isObstacle){
-      leftmotor.writeMicroseconds(lidarleft);
-      rightmotor.writeMicroseconds(lidarright);
+    if(uselidar){
+      if(isObstacle){
+        leftmotor.writeMicroseconds(lidarleft);
+        rightmotor.writeMicroseconds(lidarright);
+      }else{
+        leftmotor.writeMicroseconds(pixCH1reading);
+        rightmotor.writeMicroseconds(pixCH3reading);
+      }
     }else{
-      leftmotor.writeMicroseconds(pixCH1reading);
-      rightmotor.writeMicroseconds(pixCH3reading);
-    }
+      if(isObstacle){
+        ircheck();
+      }else{
+        leftmotor.writeMicroseconds(pixCH1reading);
+        rightmotor.writeMicroseconds(pixCH3reading);
+      }
+    }  
   }
 }
